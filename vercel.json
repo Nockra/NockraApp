@@ -1,27 +1,20 @@
 {
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/nockra", "destination": "/nockra.html" },
+    { "source": "/tools", "destination": "/tools.html" },
+    { "source": "/tools/:tool", "destination": "/tool.html" },
     { "source": "/docs", "destination": "/docs.html" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/terms", "destination": "/terms.html" },
     { "source": "/disclaimer", "destination": "/disclaimer.html" },
-    { "source": "/cookies", "destination": "/cookies.html" }
+    { "source": "/cookies", "destination": "/cookies.html" },
+    { "source": "/:ticker", "destination": "/coin.html" }
   ],
   "headers": [
-    {
-      "source": "/(app.js|i18n.js|token-artifact.js|styles.css|config.json)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store, max-age=0" }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
-      ]
-    }
+    { "source": "/core.js", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
+    { "source": "/tool.js", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
+    { "source": "/styles.css", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
+    { "source": "/config.json", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }
   ]
 }

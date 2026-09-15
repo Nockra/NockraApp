@@ -1,81 +1,44 @@
-# Nockra production pack
+# Nockra rebuilt package
 
-This build was repaired from the uploaded `NockraApp-main.zip` rather than from an older generated copy.
+This package is a ground-up rebuild intended to eliminate the page-freeze problem from the previous single-page implementation.
 
-## Interaction fix
+## Architecture
 
-The previous package had two reliability problems that could make a deployed page look complete while JavaScript controls did not respond:
+The homepage, public token page, documentation and tool catalog do **not** load a blockchain library or make RPC calls during startup. Wallet connection uses the injected wallet provider directly. Ethers is loaded only when a user actually starts a blockchain action inside a tool.
 
-1. Runtime configuration was awaited before the application attached its interface handlers.
-2. Core CSS/JS assets used domain-root paths, which break when the site is served from a repository/subdirectory or opened through physical route fallbacks.
+Every tool has its own route and lightweight workspace:
 
-This pack fixes both.
+- `/tools/token-creator`
+- `/tools/pons-v2`
+- `/tools/multisender`
+- `/tools/revoke`
+- `/tools/mint`
+- `/tools/burn`
+- `/tools/create-pool`
+- `/tools/add-liquidity`
+- `/tools/remove-liquidity`
+- `/tools/pause`
+- `/tools/unpause`
+- `/tools/block`
+- `/tools/unblock`
+- `/tools/token-page`
 
-- UI handlers attach immediately. Configuration, RPC reads and wallet-library loading run afterward in the background.
-- `app.js` resolves `config.json` from the directory that actually served the application script.
-- Root pages use relative CSS/JS/assets.
-- Physical `/docs/`, `/nockra/`, and legal fallback pages use project-root relative assets.
-- Internal links are normalized to the detected project base, so repository/subdirectory hosting is supported.
-- Event binding is defensive. One unavailable optional element cannot stop the rest of the interface from becoming clickable.
-- Static application assets and `config.json` use no-store headers on Vercel to prevent an older broken JavaScript build from remaining cached.
-- RPC/config work never blocks page interaction.
+Public routes include `/`, `/{ticker}`, `/docs`, `/privacy`, `/terms`, `/disclaimer`, `/cookies`, and a custom 404 page.
 
-## Verified interactions
+## Configuration
 
-The included browser smoke test checks real DOM interaction in Chromium for:
-
-- Tools menu open/close
-- Tool search workspace routing
-- Dark/light theme
-- English/Chinese toggle
-- Token Creator workspace
-- Wallet Connect
-- Wallet menu
-- Disconnect and reconnect
-- Pons V2 image file picker
-- No browser page errors during the test
-
-Run:
-
-```bash
-node tests/qa.mjs
-python tests/browser_smoke.py
-```
-
-## Deployment
-
-Deploy the **contents of this directory as the site root**. Do not deploy an additional parent folder above `index.html`.
-
-The pack supports:
-
-- Vercel root deployment
-- Netlify/static deployment using `_redirects`
-- repository/subdirectory hosting for the core interface and physical route fallbacks
-
-For Vercel, keep `vercel.json` at the deployment root.
-
-## Public configuration
-
-`config.json` is the public source of truth for project values, including the ticker, Robinhood Chain label, contract address, X URL, and Pons Family Buy URL template.
-
-The Buy URL template remains:
-
-`https://ponsfamily.com/launchpad/{ca}`
-
-No private keys, seed phrases, API secrets, or wallet credentials belong in `config.json`.
-
-## Wallet behavior
-
-Connect Wallet talks to the injected EVM wallet first and does not wait for RPC reads. When connected, clicking the wallet control opens Copy Address, View on Explorer, and Disconnect.
-
-Blockchain contract actions load ethers when needed. The general website UI remains usable if a third-party library CDN or public RPC is slow.
+Public project values live in `config.json`. The Pons Family buy URL is generated from `buyUrlTemplate` and `contractAddress`. If the CA or X URL is empty or invalid, the related public control is silently omitted.
 
 ## Pons V2 image upload
 
-Pons V2 uses an image file picker for PNG, JPEG or WebP. The browser previews and optimizes the image, then sends it to `/api/upload` for persistent IPFS storage.
+The Pons V2 form uses a real image file picker. `/api/upload.js` sends the selected image to Pinata and returns an IPFS URI internally to the Pons launch contract. Set `PINATA_JWT` as a server-side Vercel environment variable for this upload function. Never place that credential in `config.json`.
 
-The included Vercel upload function requires a server-side `PINATA_JWT` environment variable. Do not put this secret in `config.json`.
+## Deployment
 
-## Mainnet transactions
+Deploy the **contents** of this folder at the hosting root. On Vercel, keep `vercel.json` in the root. Do not nest the package inside an extra folder.
 
-No mainnet transaction is automatically broadcast. Writes require a compatible wallet, Robinhood Chain gas, the necessary token permissions, and explicit wallet approval.
+The included UI smoke test intentionally tests menus, theme, language, wallet connection and the token form without making network or mainnet transactions.
+
+## Transaction testing
+
+The interface uses real wallet and contract transaction paths. Mainnet deployment, token launch and liquidity writes are not automatically broadcast by the included tests because doing so would spend real funds and require an authorized wallet signature.

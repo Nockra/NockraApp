@@ -1,7 +1,8 @@
-/nockra /nockra.html 200
+/tools/* /tool.html 200
+/tools /tools.html 200
 /docs /docs.html 200
 /privacy /privacy.html 200
 /terms /terms.html 200
 /disclaimer /disclaimer.html 200
 /cookies /cookies.html 200
-/* /404.html 404
+/nockra /coin.html 200

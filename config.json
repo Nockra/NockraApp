@@ -9,19 +9,15 @@
   "chain": {
     "id": 4663,
     "hexId": "0x1237",
-    "nativeCurrency": {
-      "name": "Ether",
-      "symbol": "ETH",
-      "decimals": 18
-    },
+    "name": "Robinhood Chain",
+    "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
     "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
-    "explorerUrl": "https://robinhoodchain.blockscout.com",
-    "name": "Robinhood Chain"
+    "explorerUrl": "https://robinhoodchain.blockscout.com"
   },
   "ponsV2": {
     "factory": "0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e",
     "usdG": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
-    "publicSite": "https://www.ponsfamily.com/launchpad"
+    "publicSite": "https://ponsfamily.com/launchpad"
   },
   "uniswapV3": {
     "factory": "0x1f7d7550B1b028f7571E69A784071F0205FD2EfA",
