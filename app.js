@@ -1,7 +1,28 @@
-(() => {
+(async () => {
   'use strict';
 
-  const C = window.NOCKRA_CONFIG;
+  const DEFAULT_CONFIG = {
+    coinName:'', ticker:'', network:'', contractAddress:'', xUrl:'', buyUrlTemplate:'', description:'', imageUploadEndpoint:'/api/upload',
+    chain:{id:4663,hexId:'0x1237',name:'Robinhood Chain',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrl:'https://rpc.mainnet.chain.robinhood.com',explorerUrl:'https://robinhoodchain.blockscout.com'},
+    ponsV2:{factory:'0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e',usdG:'0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168',publicSite:'https://www.ponsfamily.com/launchpad'},
+    uniswapV3:{factory:'0x1f7d7550B1b028f7571E69A784071F0205FD2EfA',positionManager:'0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3',swapRouter:'0xCaf681a66D020601342297493863E78C959E5cb2',quoterV2:'0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7',weth:'0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73'}
+  };
+  const mergeConfig=(a,b)=>({...a,...(b||{}),chain:{...a.chain,...(b?.chain||{}),nativeCurrency:{...a.chain.nativeCurrency,...(b?.chain?.nativeCurrency||{})}},ponsV2:{...a.ponsV2,...(b?.ponsV2||{})},uniswapV3:{...a.uniswapV3,...(b?.uniswapV3||{})}});
+  async function loadConfig(){
+    const controller=typeof AbortController!=='undefined'?new AbortController():null;
+    const timer=setTimeout(()=>controller?.abort(),1200);
+    try{
+      const url=(location.protocol==='http:'||location.protocol==='https:')?'/config.json':'config.json';
+      const r=await fetch(url,{cache:'no-store',signal:controller?.signal});
+      if(!r.ok)return DEFAULT_CONFIG;
+      return mergeConfig(DEFAULT_CONFIG,await r.json());
+    }catch{return DEFAULT_CONFIG}finally{clearTimeout(timer)}
+  }
+  const C = await loadConfig();
+  window.NOCKRA_CONFIG=C;
+  const storageGet=(k,f='')=>{try{return window.localStorage?.getItem(k)??f}catch{return f}};
+  const storageSet=(k,v)=>{try{window.localStorage?.setItem(k,v)}catch{}};
+  const storageRemove=k=>{try{window.localStorage?.removeItem(k)}catch{}};
   let E = window.ethers || null;
   const ARTIFACT = window.NOCKRA_TOKEN_ARTIFACT;
   const ZERO = '0x0000000000000000000000000000000000000000';
@@ -119,11 +140,30 @@
     if(E){try{return E.getAddress(raw)}catch{}}
     return /^0x[a-fA-F0-9]{40}$/.test(raw) ? raw : '';
   };
+  function loadExternalScript(src,timeoutMs=6500){
+    return new Promise((resolve,reject)=>{
+      const s=document.createElement('script');let done=false;
+      const finish=(ok)=>{if(done)return;done=true;clearTimeout(timer);s.onload=null;s.onerror=null;ok?resolve():reject(new Error('load failed'))};
+      const timer=setTimeout(()=>finish(false),timeoutMs);
+      s.src=src;s.async=true;s.onload=()=>finish(true);s.onerror=()=>finish(false);document.head.appendChild(s);
+    });
+  }
   async function ensureEthersReady(){
     if(E) return E;
-    try { if(window.NOCKRA_ETHERS_READY) await window.NOCKRA_ETHERS_READY; } catch {}
-    E = window.ethers || null;
-    return E;
+    if(window.ethers){E=window.ethers;return E}
+    if(!window.NOCKRA_ETHERS_READY){
+      window.NOCKRA_ETHERS_READY=(async()=>{
+        const sources=[
+          'https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js',
+          'https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js',
+          'https://unpkg.com/ethers@6.13.5/dist/ethers.umd.min.js'
+        ];
+        for(const src of sources){try{await loadExternalScript(src);if(window.ethers)return window.ethers}catch{}}
+        return null;
+      })();
+    }
+    try{E=await window.NOCKRA_ETHERS_READY}catch{E=null}
+    return E||null;
   }
   async function requireEthers(){
     const lib=await ensureEthersReady();
@@ -204,7 +244,7 @@
 
   function renderToolNavigation(){
     const grouped=GROUP_ORDER.map(cat=>[cat,TOOLS.filter(t=>t.cat===cat)]).filter(([,items])=>items.length);
-    $('toolsMenuGroups').innerHTML=grouped.map(([cat,items])=>`<div class="mega-group"><h3>${cat}</h3>${items.map(t=>`<a href="/#tool/${t.id}"><span class="mega-icon">${iconSvg(t.icon)}</span><span>${t.name}${t.featured?'<span class="tool-badge">LIVE</span>':''}</span></a>`).join('')}</div>`).join('');
+    $('toolsMenuGroups').innerHTML=grouped.map(([cat,items])=>`<div class="mega-group"><h3>${cat}</h3>${items.map(t=>`<a href="#tool/${t.id}"><span class="mega-icon">${iconSvg(t.icon)}</span><span>${t.name}${t.featured?'<span class="tool-badge">LIVE</span>':''}</span></a>`).join('')}</div>`).join('');
     $('sidebarGroups').innerHTML=grouped.map(([cat,items])=>`<div class="sidebar-group"><strong>${cat}</strong>${items.map(t=>`<button class="sidebar-tool" data-route-tool="${t.id}"><span>${iconSvg(t.icon)}</span><span>${t.name}</span></button>`).join('')}</div>`).join('');
     const cats=['All',...GROUP_ORDER.filter(c=>TOOLS.some(t=>t.cat===c))];
     $('categoryFilter').innerHTML=cats.map(c=>`<button type="button" data-filter="${c}" class="${c==='All'?'active':''}">${c}</button>`).join('');
@@ -273,15 +313,18 @@
     await ensureChain();
     state.account=normalizeAddress(accounts[0]) || accounts[0];
     state.siteDisconnected=false;
-    localStorage.removeItem('nockra:wallet-disconnected');
+    storageRemove('nockra:wallet-disconnected');
     updateWalletUI();
-    try{await attachSigner()}catch{state.signer=null;state.browserProvider=null}
-    if(E && !state.publicProvider){try{state.publicProvider=new E.JsonRpcProvider(C.chain.rpcUrl,C.chain.id,{staticNetwork:true})}catch{}}
-    if(state.publicProvider) void refreshLive();
+    // Account connection must never wait on a third-party library CDN.
+    // Signer attachment is upgraded in the background and required only for contract writes.
+    void attachSigner().then(()=>{
+      if(E && !state.publicProvider){try{state.publicProvider=new E.JsonRpcProvider(C.chain.rpcUrl,C.chain.id,{staticNetwork:true})}catch{}}
+      if(state.publicProvider) void refreshLive();
+    }).catch(()=>{state.signer=null;state.browserProvider=null});
     return state.account;
   }
   async function restoreWalletSession(){
-    if(!window.ethereum?.request||localStorage.getItem('nockra:wallet-disconnected')==='1')return;
+    if(!window.ethereum?.request||storageGet('nockra:wallet-disconnected')==='1')return;
     try{
       const accounts=await window.ethereum.request({method:'eth_accounts'});
       if(!accounts?.length)return;
@@ -294,7 +337,7 @@
   }
   function disconnectWallet(){
     state.account=null;state.signer=null;state.browserProvider=null;state.chainOk=false;state.siteDisconnected=true;
-    localStorage.setItem('nockra:wallet-disconnected','1');
+    storageSet('nockra:wallet-disconnected','1');
     if($('walletMenu'))$('walletMenu').hidden=true;
     updateWalletUI();updatePonsView();
   }
@@ -665,7 +708,8 @@
 
   function route(){
     hydratePublicConfig();
-    const path=(location.pathname||'/').replace(/\/+$/,'')||'/';
+    let path=(location.pathname||'/').replace(/\/+$/,'')||'/';
+    path=path.replace(/\.html$/i,'')||'/';
     const hash=location.hash||'';
     const toolMatch=hash.match(/^#tool\/([^?]+)/);
     const isHome=path==='/';
@@ -695,7 +739,7 @@
   }
 
   function applyTheme(theme){
-    const value=theme==='light'?'light':'dark';document.documentElement.dataset.theme=value;localStorage.setItem('nockra:theme',value);const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',value==='light'?'#f4f6ef':'#080b09');
+    const value=theme==='light'?'light':'dark';document.documentElement.dataset.theme=value;storageSet('nockra:theme',value);const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',value==='light'?'#f4f6ef':'#080b09');
   }
   function toggleTheme(){applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light')}
   async function onWalletButton(){
@@ -716,24 +760,32 @@
     document.addEventListener('click',e=>{
       if(!$('toolsMenu').hidden&&!e.target.closest('#toolsMenu')&&!e.target.closest('#toolsToggle')){$('toolsMenu').hidden=true;$('toolsToggle').setAttribute('aria-expanded','false')}
       if(!$('walletMenu').hidden&&!e.target.closest('.wallet-wrap')&&!e.target.closest('#sidebarWallet'))$('walletMenu').hidden=true;
-      const routeBtn=e.target.closest('[data-route-tool]');if(routeBtn)location.href=`/#tool/${routeBtn.dataset.routeTool}`;
+      const routeBtn=e.target.closest('[data-route-tool]');if(routeBtn){e.preventDefault();location.hash=`#tool/${routeBtn.dataset.routeTool}`}
       const filter=e.target.closest('[data-filter]');if(filter){state.activeFilter=filter.dataset.filter;document.querySelectorAll('[data-filter]').forEach(n=>n.classList.toggle('active',n===filter));renderToolGrid();window.NockraI18n?.apply($('toolGrid'))}
       const copy=e.target.closest('[data-copy-ca]');if(copy){e.preventDefault();copyConfiguredAddress(copy)}
     });
     $('toolSearch').addEventListener('input',()=>{renderToolGrid();window.NockraI18n?.apply($('toolGrid'))});
-    $('workspaceBack').addEventListener('click',()=>{location.href='/#tools'});$('homeCopyCa')?.addEventListener('click',e=>copyConfiguredAddress(e.currentTarget));document.addEventListener('submit',handleSubmit);
+    $('workspaceBack').addEventListener('click',()=>{location.hash='#tools'});$('homeCopyCa')?.addEventListener('click',e=>copyConfiguredAddress(e.currentTarget));document.addEventListener('submit',handleSubmit);
     $('mobileMenuButton').addEventListener('click',()=>{$('mobilePanel').hidden=false;$('mobileMenuButton').setAttribute('aria-expanded','true')});$('closeMobile').addEventListener('click',()=>{$('mobilePanel').hidden=true;$('mobileMenuButton').setAttribute('aria-expanded','false')});$('mobilePanel').addEventListener('click',e=>{if(e.target.closest('a'))$('mobilePanel').hidden=true});
     window.addEventListener('hashchange',route);window.addEventListener('popstate',route);
     if(window.ethereum){
-      window.ethereum.on?.('accountsChanged',async accounts=>{if(localStorage.getItem('nockra:wallet-disconnected')==='1'){state.account=null;state.signer=null;state.browserProvider=null;updateWalletUI();return}state.account=accounts?.[0]?(normalizeAddress(accounts[0])||accounts[0]):null;state.signer=null;state.browserProvider=null;if(state.account)void attachSigner().catch(()=>{});updateWalletUI();if(state.publicProvider)await refreshLive();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])});
+      window.ethereum.on?.('accountsChanged',async accounts=>{if(storageGet('nockra:wallet-disconnected')==='1'){state.account=null;state.signer=null;state.browserProvider=null;updateWalletUI();return}state.account=accounts?.[0]?(normalizeAddress(accounts[0])||accounts[0]):null;state.signer=null;state.browserProvider=null;if(state.account)void attachSigner().catch(()=>{});updateWalletUI();if(state.publicProvider)await refreshLive();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])});
       window.ethereum.on?.('chainChanged',async()=>{if(!state.account)return;state.signer=null;state.browserProvider=null;try{state.chainOk=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase()===String(C.chain.hexId).toLowerCase();void attachSigner().catch(()=>{})}catch{state.chainOk=false}updateWalletUI();if(state.publicProvider)await refreshLive()})
     }
   }
 
-  async function boot(){
-    applyTheme(localStorage.getItem('nockra:theme')||'dark');
-    hydratePublicConfig();
-    renderToolNavigation();renderContracts();setupEvents();await restoreWalletSession();updateWalletUI();route();window.NockraI18n?.apply(document);void initPublic();
+  function boot(){
+    try{applyTheme(storageGet('nockra:theme','dark')||'dark')}catch{}
+    try{hydratePublicConfig()}catch{}
+    try{renderToolNavigation()}catch{}
+    try{renderContracts()}catch{}
+    try{setupEvents()}catch{}
+    try{updateWalletUI()}catch{}
+    try{route()}catch{}
+    try{window.NockraI18n?.apply(document)}catch{}
+    document.documentElement.dataset.appReady='true';
+    void restoreWalletSession().then(()=>{try{updateWalletUI();route()}catch{}}).catch(()=>{});
+    void initPublic();
   }
   boot();
-})();
+})().catch(()=>{document.documentElement.dataset.appReady='false'});

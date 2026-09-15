@@ -12,7 +12,6 @@ const html=read('index.html');
 const app=read('app.js');
 const css=read('styles.css');
 const i18n=read('i18n.js');
-const bootstrap=read('bootstrap.js');
 
 must(cfg.network==='Robinhood Chain','network must be Robinhood Chain');
 must(cfg.chain?.id===4663 && String(cfg.chain?.hexId).toLowerCase()==='0x1237','Robinhood Chain ID mismatch');
@@ -23,13 +22,13 @@ must(buy(cfg.buyUrlTemplate,'ABC123')==='https://ponsfamily.com/launchpad/ABC123
 must(buy(cfg.buyUrlTemplate,'XYZ999')==='https://ponsfamily.com/launchpad/XYZ999','XYZ999 buy URL replacement failed');
 must(cfg.imageUploadEndpoint==='/api/upload','image upload endpoint mismatch');
 
-for(const [f,src] of [['app.js',app],['bootstrap.js',bootstrap],['token-artifact.js',read('token-artifact.js')],['i18n.js',i18n]]) new vm.Script(src,{filename:f});
+for(const [f,src] of [['app.js',app],['token-artifact.js',read('token-artifact.js')],['i18n.js',i18n]]) new vm.Script(src,{filename:f});
 
 for(const href of ['/docs','/privacy','/terms','/disclaimer','/cookies']) must(html.includes(`href="${href}"`),`missing link ${href}`);
 for(const f of ['docs/index.html','privacy/index.html','terms/index.html','disclaimer/index.html','cookies/index.html','nockra/index.html','404.html']) must(exists(f),`missing route fallback ${f}`);
 const vercel=JSON.parse(read('vercel.json'));
-must(Array.isArray(vercel.rewrites) && vercel.rewrites.some(r=>r.destination==='/index.html'),'Vercel route rewrites missing');
-must(read('_redirects').includes('/* /index.html 200'),'static SPA redirect missing');
+must(Array.isArray(vercel.rewrites) && vercel.rewrites.some(r=>r.source==='/nockra'&&r.destination==='/nockra.html'),'Vercel ticker route rewrite missing');
+must(read('_redirects').includes('/nockra /nockra.html 200'),'static ticker redirect missing');
 
 for(const tool of ['token-creator','pons-v2','multisender','revoke','mint','burn','create-pool','add-liquidity','remove-liquidity','pause','unpause','block','unblock','token-page']) must(app.includes(`id:'${tool}'`),`missing tool ${tool}`);
 
@@ -39,7 +38,7 @@ must(app.includes('function disconnectWallet()') && html.includes('id="disconnec
 must(app.includes("method:'eth_requestAccounts'") && app.includes('wallet_switchEthereumChain') && app.includes('wallet_addEthereumChain'),'wallet connect/switch flow incomplete');
 must(html.includes('id="languageToggle"') && app.includes('NockraI18n?.toggle'),'language toggle missing');
 must(html.includes('id="themeToggle"') && app.includes('function toggleTheme()'),'theme toggle missing');
-must(i18n.includes("'zh-CN'") && i18n.includes("localStorage.getItem('nockra:lang')"),'Chinese localization state missing');
+must(i18n.includes("'zh-CN'") && i18n.includes('storageGet') && i18n.includes('storageSet'),'Chinese localization storage hardening missing');
 must(css.includes('font-family:"Poppins"!important'),'Poppins global font rule missing');
 for(const m of css.matchAll(/font-family\s*:\s*([^;}]+)/g)){const value=m[1];must(/Poppins|var\(--font\)/.test(value),`non-Poppins font family found: ${value}`)}
 
@@ -57,10 +56,13 @@ must(!arrowChars.test(publicSource+css),'arrow glyph remains in public source');
 for(const ch of publicSource){must(ch.codePointAt(0)<0x1F000,`emoji-range character remains: U+${ch.codePointAt(0).toString(16)}`)}
 must(!app.includes('M6 18 18 6M11 6h7v7') && !app.includes('M4 12h13M13 8l4 4-4 4'),'arrow-shaped tool icons remain');
 
-must(bootstrap.includes('window.NOCKRA_ETHERS_READY = loadEthersInBackground()'),'ethers must load in background');
-must(!bootstrap.includes('await loadEthersInBackground()'),'bootstrap must not block UI on ethers CDN');
-must(bootstrap.indexOf("loadScript('/app.js'")>bootstrap.indexOf('window.NOCKRA_ETHERS_READY'),'app bootstrap missing');
+must(html.includes('<script src="/app.js?v=20260915c" defer></script>'),'app must load directly without a dynamic bootstrap gate');
+must(html.includes('<script src="/token-artifact.js?v=20260915c" defer></script>'),'token artifact must load directly');
+must(!html.includes('bootstrap.js'),'legacy dynamic bootstrap must not gate the interface');
+must(app.includes('storageGet') && app.includes('storageSet') && app.includes('storageRemove'),'storage-denied environments must not stop UI boot');
+must(app.includes("document.documentElement.dataset.appReady='true'"),'UI readiness marker missing');
 must(app.includes('void initPublic()'),'live RPC initialization must not block UI boot');
+must(app.includes('Account connection must never wait on a third-party library CDN'),'wallet connect must not block on ethers loading');
 must(css.includes('.tools-menu[hidden]') && css.includes('.mobile-panel[hidden]') && css.includes('display:none!important'),'hidden overlays must not intercept clicks');
 must(!css.includes('html:not([data-config-ready="true"]) body{visibility:hidden}'),'whole-page visibility lock must be removed');
 

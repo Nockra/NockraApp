@@ -2,6 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
+  <base href="/">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Nockra | Robinhood Chain Token Tools</title>
   <meta id="metaDescription" name="description" content="Create, launch and manage ERC-20 tokens on Robinhood Chain with direct wallet transactions, Pons V2 launching and Uniswap V3 liquidity tools." />
@@ -23,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles.css?v=20260915c" />
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
@@ -109,8 +110,8 @@
           <h1 data-i18n-html="heroTitle">Token tools for a <span>brighter on-chain future.</span></h1>
           <p class="hero-lead" data-i18n="heroLead">Nockra is a focused ERC-20 workspace for Robinhood Chain. Deploy a token, launch through Pons V2, manage contract controls, send assets and work with Uniswap V3 liquidity from one interface.</p>
           <div class="hero-actions">
-            <a class="button primary" href="/#tool/pons-v2" data-i18n="launchPons">Launch on Pons V2</a>
-            <a class="button ghost" href="/#tools" data-i18n="exploreTools">Explore all tools</a>
+            <a class="button primary" href="#tool/pons-v2" data-i18n="launchPons">Launch on Pons V2</a>
+            <a class="button ghost" href="#tools" data-i18n="exploreTools">Explore all tools</a>
           </div>
           <div class="hero-proof">
             <span><b>01</b> <span data-i18n="directSigning">Direct wallet signing</span></span>
@@ -162,7 +163,7 @@
           <span class="eyebrow lime" data-i18n="featuredLaunch">FEATURED LAUNCH ROUTE</span>
           <h2 data-i18n-html="ponsTitle">Pons V2.<br><span>Launch with live economics pinned.</span></h2>
           <p data-i18n="ponsLead">Launch through the current Pons V2 factory. Nockra reads launch eligibility, live fees, enabled configs, approved pair assets and the current launch-and-buy forwarder before you sign.</p>
-          <div class="pons-actions"><a class="button primary" href="/#tool/pons-v2" data-i18n="openPons">Open Pons V2 launch</a><a class="text-link" href="https://www.ponsfamily.com/launchpad" target="_blank" rel="noopener noreferrer" data-i18n="ponsLaunchpad">Pons launchpad</a></div>
+          <div class="pons-actions"><a class="button primary" href="#tool/pons-v2" data-i18n="openPons">Open Pons V2 launch</a><a class="text-link" href="https://www.ponsfamily.com/launchpad" target="_blank" rel="noopener noreferrer" data-i18n="ponsLaunchpad">Pons launchpad</a></div>
         </div>
         <div class="pons-flow" aria-label="Pons launch flow">
           <div><span>01</span><b data-i18n="configure">Configure</b><small data-i18n="configureDesc">Token metadata and creator settings</small></div>
@@ -189,7 +190,7 @@
 
       <section class="section closing" id="about">
         <div><span class="eyebrow lime">NOCKRA / ROBINHOOD CHAIN</span><h2 data-i18n-html="oneChain">One chain.<br>One focused toolset.</h2></div>
-        <div class="closing-copy"><p data-i18n="nonCustodial">Nockra does not custody funds or private keys. Token permissions remain defined by each contract, and external protocol actions remain subject to those protocols' live rules.</p><a class="button primary" href="/#tools" data-i18n="startBuilding">Start building</a></div>
+        <div class="closing-copy"><p data-i18n="nonCustodial">Nockra does not custody funds or private keys. Token permissions remain defined by each contract, and external protocol actions remain subject to those protocols' live rules.</p><a class="button primary" href="#tools" data-i18n="startBuilding">Start building</a></div>
       </section>
     </section>
 
@@ -227,7 +228,8 @@
 
   <div class="toast-host" id="toastHost" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="/i18n.js"></script>
-  <script src="/bootstrap.js"></script>
+  <script src="/i18n.js?v=20260915c" defer></script>
+  <script src="/token-artifact.js?v=20260915c" defer></script>
+  <script src="/app.js?v=20260915c" defer></script>
 </body>
 </html>

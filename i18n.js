@@ -13,7 +13,9 @@
     ['Search tools','搜索工具'],['No tool matches that search.','没有匹配的工具。'],['Start a token journey.','开始你的代币创建流程。'],['Go live through Pons V2.','通过 Pons V2 上线。'],['Work with Uniswap V3.','使用 Uniswap V3。'],['Send assets to holders.','向持有者发送资产。'],['Use permissions defined by a token.','使用代币合约定义的权限。'],['Read live token state.','读取实时代币状态。'],
     ['Add at least one recipient.','请至少添加一个接收地址。'],['Recipient address','接收地址'],['Amount','数量'],['Fee tier','费率档位'],['Price','价格'],['Position token ID','仓位代币 ID'],['Liquidity to remove','要移除的流动性'],['Account','账户'],['Owner','所有者'],['Admin','管理员'],['Minter','增发角色'],['Pauser','暂停角色']
   ]);
-  let lang = localStorage.getItem('nockra:lang') === 'zh' ? 'zh' : 'en';
+  const storageGet=(k,f='')=>{try{return window.localStorage?.getItem(k)??f}catch{return f}};
+  const storageSet=(k,v)=>{try{window.localStorage?.setItem(k,v)}catch{}};
+  let lang = storageGet('nockra:lang') === 'zh' ? 'zh' : 'en';
   let applying = false;
 
   function setTextByKey(el,key,html=false){
@@ -55,7 +57,7 @@
       const mobile=document.getElementById('mobileLanguageToggle');if(mobile)mobile.textContent=lang==='zh'?'EN':'中文';
     } finally { applying=false; }
   }
-  function set(next){lang=next==='zh'?'zh':'en';localStorage.setItem('nockra:lang',lang);apply(document);document.dispatchEvent(new CustomEvent('nockra:language',{detail:{lang}}));}
+  function set(next){lang=next==='zh'?'zh':'en';storageSet('nockra:lang',lang);apply(document);document.dispatchEvent(new CustomEvent('nockra:language',{detail:{lang}}));}
   function toggle(){set(lang==='zh'?'en':'zh')}
   function current(){return lang}
   const observer=new MutationObserver(muts=>{if(applying)return;for(const m of muts){for(const n of m.addedNodes){if(n.nodeType===Node.ELEMENT_NODE){apply(n)}else if(n.nodeType===Node.TEXT_NODE&&n.parentElement){apply(n.parentElement)}}}});
