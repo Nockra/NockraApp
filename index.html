@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Independent Robinhood Chain token creator and Pons V2 launch interface." />
+  <meta name="theme-color" content="#ffffff" />
+  <title>RHC Factory | Robinhood Chain Token Creator & Pons V2 Launchpad</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="toastHost" class="toast-host" aria-live="polite"></div>
+
+  <header class="site-header">
+    <div class="header-left">
+      <a class="brand" href="#home" aria-label="RHC Factory home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span class="brand-name">RHC Factory</span>
+      </a>
+
+      <div class="search-shell" id="searchShell">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m2.35-5.65A8 8 0 1 1 3 11a8 8 0 0 1 16 0Z"/></svg>
+        <input id="siteSearch" type="search" autocomplete="off" placeholder="Search tools or network info" aria-label="Search tools" />
+        <div id="searchResults" class="search-results" hidden></div>
+      </div>
+
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <div class="nav-dropdown">
+          <button class="nav-link dropdown-trigger" type="button" data-menu="createMenu">Create token <span class="chev">⌄</span></button>
+          <div id="createMenu" class="dropdown-menu small-menu" hidden>
+            <a href="#create" class="dropdown-row">
+              <span class="tool-icon rh">R</span>
+              <span><strong>Create token on Robinhood Chain</strong><small>Pons V2, direct launch</small></span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown">
+          <button class="nav-link dropdown-trigger" type="button" data-menu="toolsMenu">Tools <span class="chev">⌄</span></button>
+          <div id="toolsMenu" class="dropdown-menu" hidden>
+            <a href="#create" class="dropdown-row"><span class="tool-icon">✦</span><span><strong>Token Creator</strong><small>Simple Robinhood Chain launch</small></span></a>
+            <a href="#launchpad" class="dropdown-row"><span class="tool-icon">◈</span><span><strong>Pons V2 Launchpad</strong><small>Advanced launch controls</small></span><span class="new-badge">Live</span></a>
+            <a href="#manager" class="dropdown-row"><span class="tool-icon">▣</span><span><strong>Token Manager</strong><small>Inspect, transfer and burn</small></span></a>
+            <a href="#network" class="dropdown-row"><span class="tool-icon">◎</span><span><strong>Network Status</strong><small>Live RPC and Pons factory state</small></span></a>
+          </div>
+        </div>
+
+        <a class="nav-link" href="https://docs.robinhood.com/chain/" target="_blank" rel="noreferrer">Docs</a>
+      </nav>
+    </div>
+
+    <div class="header-actions">
+      <a class="icon-button" href="https://robinhoodchain.blockscout.com" target="_blank" rel="noreferrer" aria-label="Robinhood Chain explorer">↗</a>
+      <button id="connectButton" class="wallet-button" type="button"><span class="wallet-icon">▣</span><span id="walletButtonLabel">Connect wallet</span></button>
+      <button id="mobileMenuButton" class="mobile-menu-button" type="button" aria-label="Open menu">☰</button>
+    </div>
+  </header>
+
+  <div id="mobileNav" class="mobile-nav" hidden>
+    <a href="#create">Create Token</a>
+    <a href="#launchpad">Pons V2 Launchpad</a>
+    <a href="#manager">Token Manager</a>
+    <a href="#network">Network Status</a>
+    <a href="https://docs.robinhood.com/chain/" target="_blank" rel="noreferrer">Robinhood Chain Docs ↗</a>
+  </div>
+
+  <main>
+    <section id="page-home" class="page-section active-page">
+      <div class="content-narrow home-wrap">
+        <a class="launch-banner" href="#launchpad">
+          <span class="banner-badge">Pons V2 <span aria-hidden="true">●</span></span>
+          <span class="banner-copy">Launch a Robinhood Chain token directly through Pons V2</span>
+          <span class="banner-coins" aria-hidden="true"><i>R</i><i>P</i><i>Ξ</i><i>+</i></span>
+        </a>
+
+        <section class="hero-card">
+          <div class="hero-art" aria-hidden="true">
+            <div class="art-window"><span></span><span></span><span></span></div>
+            <div class="art-pill"></div>
+            <div class="art-line one"></div><div class="art-line two"></div><div class="art-line three"></div>
+          </div>
+          <div class="eyebrow">Robinhood Chain only</div>
+          <h1>Create, launch and manage tokens on Robinhood Chain</h1>
+          <p class="hero-copy">A focused interface for Robinhood Chain. Create a Pons V2 token, configure an advanced launch, or inspect an ERC-20 from one place.</p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#create">Create a token</a>
+            <a class="secondary-button" href="#launchpad">Open Pons V2 launchpad</a>
+          </div>
+          <div class="status-strip">
+            <div><span class="status-dot" id="homeRpcDot"></span><small>Robinhood RPC</small><strong id="homeBlock">Checking…</strong></div>
+            <div><span class="status-dot" id="homeFactoryDot"></span><small>Pons V2 factory</small><strong id="homeFactoryState">Checking…</strong></div>
+            <div><small>Network</small><strong>Chain ID 4663</strong></div>
+          </div>
+        </section>
+
+        <section class="tool-grid section-space">
+          <a class="tool-card" href="#create"><span class="tool-card-icon">✦</span><h2>Token Creator</h2><p>A short form for a standard Pons V2 launch with transparent defaults.</p><span class="card-link">Create token →</span></a>
+          <a class="tool-card" href="#launchpad"><span class="tool-card-icon">◈</span><h2>Pons V2 Launchpad</h2><p>Choose pair asset, creator tax, optional developer buy and launch exemptions.</p><span class="card-link">Advanced launch →</span></a>
+          <a class="tool-card" href="#manager"><span class="tool-card-icon">▣</span><h2>Token Manager</h2><p>Read live ERC-20 data, transfer balances, burn supported tokens and add assets to your wallet.</p><span class="card-link">Manage token →</span></a>
+        </section>
+
+        <section class="truth-card section-space">
+          <div><span class="truth-kicker">No mock transactions</span><h2>Every blockchain action is either a real read or a real wallet transaction.</h2></div>
+          <p>The interface reads launch terms directly from the configured Pons V2 factory before signing. It does not show invented fees, balances, token addresses or success states. If the RPC or contract cannot be read, launching is blocked.</p>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-create" class="page-section">
+      <div class="content-medium page-top">
+        <div class="page-heading">
+          <div><span class="eyebrow">Simple creator</span><h1>Create a Robinhood Chain token</h1><p>Direct Pons V2 launch with ETH as the pair, zero creator tax, no developer buy and no snipe exemptions. Use the advanced launchpad for those controls.</p></div>
+          <div class="network-chip"><span class="status-dot" id="createStatusDot"></span> Robinhood Chain</div>
+        </div>
+
+        <div class="form-layout">
+          <form id="simpleLaunchForm" class="panel form-panel" novalidate>
+            <div class="panel-title"><h2>Token details</h2><span class="step-chip">Pons V2</span></div>
+            <div class="form-grid two">
+              <label>Token name<input id="simpleName" required maxlength="64" placeholder="Example Token" /></label>
+              <label>Symbol<input id="simpleSymbol" required maxlength="11" placeholder="EXAMPLE" autocapitalize="characters" /></label>
+            </div>
+            <label>Logo URL <span class="help">HTTPS or IPFS URI, up to 512 bytes</span><input id="simpleLogo" required placeholder="https://… or ipfs://…" /></label>
+            <label>Description<textarea id="simpleDescription" maxlength="1000" rows="4" placeholder="What is this token for?"></textarea></label>
+            <div class="form-grid two">
+              <label>Website <span class="optional">Optional</span><input id="simpleWebsite" placeholder="https://…" /></label>
+              <label>X / Twitter <span class="optional">Optional</span><input id="simpleTwitter" placeholder="https://x.com/… or @handle" /></label>
+            </div>
+            <label>Telegram <span class="optional">Optional</span><input id="simpleTelegram" placeholder="https://t.me/…" /></label>
+            <label>Creator fee recipient <span class="help">Defaults to your connected wallet</span><input id="simpleRecipient" placeholder="0x…" /></label>
+
+            <div class="terms-box" id="simpleTermsBox">
+              <div><span>Pair</span><strong>ETH</strong></div>
+              <div><span>Creator tax</span><strong>0%</strong></div>
+              <div><span>Launch config</span><strong id="simpleConfig">Read from chain</strong></div>
+              <div><span>Launch fee</span><strong id="simpleFee">Read from chain</strong></div>
+            </div>
+            <div class="form-message" id="simpleMessage" hidden></div>
+            <button id="simpleLaunchButton" class="primary-button full" type="submit">Connect wallet to check eligibility</button>
+            <p class="fine-print">The launch fee and economics hash are read again immediately before your wallet is asked to sign.</p>
+          </form>
+
+          <aside class="panel side-panel sticky-panel">
+            <h2>What this does</h2>
+            <ol class="numbered-list"><li><span>1</span><div><strong>Reads Pons V2 terms</strong><p>Launch availability, current fee and economics are fetched from the live factory.</p></div></li><li><span>2</span><div><strong>Simulates the launch</strong><p>The exact call is tested before broadcast so a known revert does not waste gas.</p></div></li><li><span>3</span><div><strong>You sign once</strong><p>The connected wallet submits the launch directly. No private key enters this site.</p></div></li></ol>
+            <div class="address-card"><small>Pons V2 factory</small><code>0x7eD598…01EC7e</code><a href="https://robinhoodchain.blockscout.com/address/0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e" target="_blank" rel="noreferrer">View contract ↗</a></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-launchpad" class="page-section">
+      <div class="content-wide page-top">
+        <div class="page-heading">
+          <div><span class="eyebrow">Advanced launcher</span><h1>Pons V2 Launchpad</h1><p>Direct Pons V2 integration with no intermediate fee-routing wrapper contracts.</p></div>
+          <button id="refreshPonsButton" class="secondary-button compact" type="button">Refresh live terms</button>
+        </div>
+
+        <div class="live-terms panel">
+          <div><small>Launch gate</small><strong id="ponsEnabled">Checking…</strong></div>
+          <div><small>Launch fee</small><strong id="ponsFee">Checking…</strong></div>
+          <div><small>Max creator tax</small><strong id="ponsMaxTax">Checking…</strong></div>
+          <div><small>Launch-and-buy forwarder</small><strong id="ponsForwarder">Checking…</strong></div>
+          <div><small>Latest block</small><strong id="ponsBlock">Checking…</strong></div>
+        </div>
+
+        <form id="advancedLaunchForm" class="launch-grid" novalidate>
+          <section class="panel form-panel">
+            <div class="panel-title"><h2>1. Token metadata</h2><span class="step-chip">Required</span></div>
+            <div class="form-grid two"><label>Name<input id="advName" required maxlength="64" placeholder="Example Token" /></label><label>Symbol<input id="advSymbol" required maxlength="11" placeholder="EXAMPLE" /></label></div>
+            <label>Logo URL <span class="help">HTTPS or IPFS URI, max 512 bytes</span><input id="advLogo" required placeholder="https://… or ipfs://…" /></label>
+            <label>Description<textarea id="advDescription" maxlength="1000" rows="4" placeholder="Token description"></textarea></label>
+            <div class="form-grid two"><label>Website <span class="optional">Optional</span><input id="advWebsite" placeholder="https://…" /></label><label>X / Twitter <span class="optional">Optional</span><input id="advTwitter" placeholder="@handle or URL" /></label></div>
+            <div class="form-grid two"><label>Telegram <span class="optional">Optional</span><input id="advTelegram" placeholder="https://t.me/…" /></label><label>Discord <span class="optional">Optional</span><input id="advDiscord" placeholder="https://discord.gg/…" /></label></div>
+            <label>Farcaster <span class="optional">Optional</span><input id="advFarcaster" placeholder="Profile or channel URL" /></label>
+          </section>
+
+          <section class="panel form-panel">
+            <div class="panel-title"><h2>2. Launch economics</h2><span class="step-chip">Live checked</span></div>
+            <label>Launch config<select id="advConfig"><option value="">Reading enabled configs…</option></select></label>
+            <label>Pair asset<select id="advPair"><option value="native">ETH (native)</option><option value="usdg">USDG</option><option value="custom">Custom approved Pons pair</option></select></label>
+            <label id="customPairLabel" hidden>Custom pair token address<input id="advCustomPair" placeholder="0x…" /></label>
+            <div id="pairCheck" class="inline-status">ETH is the native pair.</div>
+            <label>Creator fee recipient <span class="help">Receives creator trading fees under Pons V2 rules</span><input id="advRecipient" placeholder="0x…" /></label>
+            <div class="form-grid two">
+              <label>Creator tax (%)<input id="advTax" type="number" inputmode="decimal" value="0" min="0" step="0.01" /></label>
+              <label class="toggle-label"><span>Buyback enabled</span><input id="advBuyback" class="switch-input" type="checkbox" /><span class="switch" aria-hidden="true"></span></label>
+            </div>
+            <div class="divider"></div>
+            <div class="panel-title mini"><h3>Optional developer buy</h3><span class="optional">Atomic with launch</span></div>
+            <label>Amount in pair asset<input id="advDevBuy" type="text" inputmode="decimal" placeholder="0" /></label>
+            <label>Minimum tokens out (raw units) <span class="help">Optional integer passed directly to Pons V2. Leave blank for 0.</span><input id="advMinOut" type="text" inputmode="decimal" placeholder="0" /></label>
+            <div id="devBuyNotice" class="notice">A zero minimum means there is no output floor. The launch and buy are still atomic, but setting a minimum gives you an explicit price-protection condition.</div>
+          </section>
+
+          <section class="panel form-panel">
+            <div class="panel-title"><h2>3. Launch controls</h2><span class="step-chip">Advanced</span></div>
+            <label>Snipe-tax exemptions <span class="help">One address per line, maximum 32</span><textarea id="advExemptions" rows="6" placeholder="0x…&#10;0x…"></textarea></label>
+            <div class="notice">Exemptions are passed to the Pons V2 launch call. Leave this blank if you do not need them.</div>
+            <div class="review-list">
+              <div><span>Factory</span><code>0x7eD598…01EC7e</code></div>
+              <div><span>Launch config</span><strong id="advConfigReview">Live selection</strong></div>
+              <div><span>Native value</span><strong id="advValuePreview">Live fee only</strong></div>
+            </div>
+            <div class="form-message" id="advancedMessage" hidden></div>
+            <button id="advancedLaunchButton" class="primary-button full" type="submit">Connect wallet to check eligibility</button>
+            <p class="fine-print">For an ERC-20 pair with a developer buy, the app checks your balance and allowance and asks for an exact approval to the current launch forwarder when needed.</p>
+          </section>
+        </form>
+
+        <section id="launchResult" class="panel result-panel" hidden>
+          <span class="result-check">✓</span><div><span class="eyebrow">Confirmed on Robinhood Chain</span><h2>Token launched</h2><div class="result-grid"><div><small>Token</small><a id="resultToken" target="_blank" rel="noreferrer"></a></div><div><small>Curve</small><a id="resultCurve" target="_blank" rel="noreferrer"></a></div><div><small>Transaction</small><a id="resultTx" target="_blank" rel="noreferrer"></a></div><div><small>Pons page</small><a id="resultPons" target="_blank" rel="noreferrer">Open token page ↗</a></div></div></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-manager" class="page-section">
+      <div class="content-medium page-top">
+        <div class="page-heading"><div><span class="eyebrow">ERC-20 tools</span><h1>Robinhood Chain Token Manager</h1><p>Load a token directly from Robinhood Chain. The interface displays only values returned by the contract and your wallet.</p></div></div>
+        <section class="panel lookup-panel">
+          <label>Token contract address<div class="input-action"><input id="managerAddress" placeholder="0x…" /><button id="loadTokenButton" class="secondary-button compact" type="button">Load token</button></div></label>
+          <div id="managerMessage" class="form-message" hidden></div>
+        </section>
+
+        <section id="tokenDashboard" class="manager-dashboard" hidden>
+          <div class="token-summary panel">
+            <div class="token-avatar" id="tokenAvatar">T</div>
+            <div><small id="tokenAddressShort">0x…</small><h2 id="tokenName">Token</h2><p id="tokenSymbol">—</p></div>
+            <a id="tokenExplorerLink" class="secondary-button compact" target="_blank" rel="noreferrer">Explorer ↗</a>
+          </div>
+          <div class="metric-grid">
+            <div class="metric panel"><small>Total supply</small><strong id="tokenSupply">—</strong></div>
+            <div class="metric panel"><small>Decimals</small><strong id="tokenDecimals">—</strong></div>
+            <div class="metric panel"><small>Your balance</small><strong id="tokenBalance">Connect wallet</strong></div>
+          </div>
+          <div class="tool-grid manager-tools">
+            <form id="transferForm" class="panel form-panel"><h2>Transfer</h2><label>Recipient<input id="transferRecipient" placeholder="0x…" /></label><label>Amount<input id="transferAmount" inputmode="decimal" placeholder="0" /></label><button class="primary-button full" type="submit">Transfer tokens</button><div id="transferMessage" class="form-message" hidden></div></form>
+            <form id="burnForm" class="panel form-panel"><h2>Burn</h2><label>Amount<input id="burnAmount" inputmode="decimal" placeholder="0" /></label><button class="secondary-button full" type="submit">Burn tokens</button><p class="fine-print">This calls <code>burn(uint256)</code>. If the token does not implement it, simulation fails and no transaction is sent.</p><div id="burnMessage" class="form-message" hidden></div></form>
+            <div class="panel form-panel"><h2>Add to wallet</h2><p class="muted-copy">Requests the connected EIP-1193 wallet to watch this ERC-20 using the loaded contract address, symbol and decimals.</p><button id="watchAssetButton" class="secondary-button full" type="button">Add token to wallet</button><div id="watchMessage" class="form-message" hidden></div></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-network" class="page-section">
+      <div class="content-medium page-top">
+        <div class="page-heading"><div><span class="eyebrow">Live infrastructure</span><h1>Robinhood Chain status</h1><p>Network configuration and contract state used by this interface.</p></div><button id="networkRefreshButton" class="secondary-button compact" type="button">Refresh</button></div>
+        <div class="network-grid">
+          <div class="panel network-card"><small>Chain</small><h2>Robinhood Chain</h2><dl><div><dt>Chain ID</dt><dd>4663</dd></div><div><dt>Native currency</dt><dd>ETH</dd></div><div><dt>Latest block</dt><dd id="networkBlock">Checking…</dd></div></dl></div>
+          <div class="panel network-card"><small>Public RPC</small><h2 id="networkRpcState">Checking…</h2><code>https://rpc.mainnet.chain.robinhood.com</code><p>The public endpoint can be rate-limited. For production traffic, configure a dedicated Robinhood Chain RPC in <code>app.js</code>.</p></div>
+          <div class="panel network-card"><small>Pons V2 factory</small><h2 id="networkPonsState">Checking…</h2><code>0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e</code><dl><div><dt>Launch fee</dt><dd id="networkFee">—</dd></div><div><dt>Max creator tax</dt><dd id="networkTax">—</dd></div></dl></div>
+          <div class="panel network-card"><small>Useful links</small><h2>Verify independently</h2><div class="stack-links"><a href="https://robinhoodchain.blockscout.com" target="_blank" rel="noreferrer">Blockscout explorer ↗</a><a href="https://docs.robinhood.com/chain/" target="_blank" rel="noreferrer">Robinhood Chain docs ↗</a><a href="https://www.ponsfamily.com/launchpad" target="_blank" rel="noreferrer">Pons launchpad ↗</a></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div><a class="brand footer-brand" href="#home"><span class="brand-mark">R</span><span class="brand-name">RHC Factory</span></a><p>Independent Robinhood Chain token tooling.</p></div>
+    <div><strong>Tools</strong><a href="#create">Token Creator</a><a href="#launchpad">Pons V2 Launchpad</a><a href="#manager">Token Manager</a></div>
+    <div><strong>Verify</strong><a href="https://robinhoodchain.blockscout.com" target="_blank" rel="noreferrer">Blockscout</a><a href="https://docs.robinhood.com/chain/" target="_blank" rel="noreferrer">Chain docs</a><a href="https://www.ponsfamily.com/launchpad" target="_blank" rel="noreferrer">Pons</a></div>
+    <div class="footer-disclaimer"><strong>Independent project</strong><p>Not affiliated with or endorsed by Robinhood Markets, Inc. or Pons. “Robinhood” and “Pons” are used only to identify the network and third-party protocol this interface connects to.</p></div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.17.0/dist/ethers.umd.min.js" crossorigin="anonymous"></script>
+  <script src="app.js"></script>
+</body>
+</html>
