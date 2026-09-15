@@ -27,7 +27,8 @@ for(const [f,src] of [['app.js',app],['bootstrap.js',bootstrap],['token-artifact
 
 for(const href of ['/docs','/privacy','/terms','/disclaimer','/cookies']) must(html.includes(`href="${href}"`),`missing link ${href}`);
 for(const f of ['docs/index.html','privacy/index.html','terms/index.html','disclaimer/index.html','cookies/index.html','nockra/index.html','404.html']) must(exists(f),`missing route fallback ${f}`);
-must(read('vercel.json').includes('"handle": "filesystem"') && read('vercel.json').includes('"dest": "/index.html"'),'Vercel SPA route fallback missing');
+const vercel=JSON.parse(read('vercel.json'));
+must(Array.isArray(vercel.rewrites) && vercel.rewrites.some(r=>r.destination==='/index.html'),'Vercel route rewrites missing');
 must(read('_redirects').includes('/* /index.html 200'),'static SPA redirect missing');
 
 for(const tool of ['token-creator','pons-v2','multisender','revoke','mint','burn','create-pool','add-liquidity','remove-liquidity','pause','unpause','block','unblock','token-page']) must(app.includes(`id:'${tool}'`),`missing tool ${tool}`);
@@ -55,6 +56,13 @@ const arrowChars=/[→↗←↓↑⇢⇠➜➝➞➟➠➡⟶⟵›»❯❮▶�
 must(!arrowChars.test(publicSource+css),'arrow glyph remains in public source');
 for(const ch of publicSource){must(ch.codePointAt(0)<0x1F000,`emoji-range character remains: U+${ch.codePointAt(0).toString(16)}`)}
 must(!app.includes('M6 18 18 6M11 6h7v7') && !app.includes('M4 12h13M13 8l4 4-4 4'),'arrow-shaped tool icons remain');
+
+must(bootstrap.includes('window.NOCKRA_ETHERS_READY = loadEthersInBackground()'),'ethers must load in background');
+must(!bootstrap.includes('await loadEthersInBackground()'),'bootstrap must not block UI on ethers CDN');
+must(bootstrap.indexOf("loadScript('/app.js'")>bootstrap.indexOf('window.NOCKRA_ETHERS_READY'),'app bootstrap missing');
+must(app.includes('void initPublic()'),'live RPC initialization must not block UI boot');
+must(css.includes('.tools-menu[hidden]') && css.includes('.mobile-panel[hidden]') && css.includes('display:none!important'),'hidden overlays must not intercept clicks');
+must(!css.includes('html:not([data-config-ready="true"]) body{visibility:hidden}'),'whole-page visibility lock must be removed');
 
 for(const asset of ['assets/favicon.png','assets/nockra-mark.png','assets/nockra-badge.png']) must(exists(asset),`missing ${asset}`);
 console.log('QA passed: routes, wallet flow, tools, Poppins, Chinese/theme toggles, social fields, file upload, arrows/emoji and public cleanliness.');

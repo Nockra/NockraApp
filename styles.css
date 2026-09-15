@@ -14,7 +14,7 @@
 @media(max-width:860px){.header-x{display:none!important}.public-shell{padding:70px 18px 90px}.public-hero,.public-section-grid{grid-template-columns:1fr;gap:32px}.project-mark-panel{border-left:0;border-top:1px solid var(--line);min-height:220px}.docs-index{position:static;display:grid;grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.public-hero h1{font-size:54px}.public-kv>div{grid-template-columns:1fr;gap:5px}.public-actions{flex-direction:column}.public-actions .button{width:100%}.docs-index{grid-template-columns:1fr}}
 .header-buy{height:40px;padding:0 15px;border-radius:999px;background:var(--lime);color:#070a08;text-decoration:none;display:inline-flex;align-items:center;font-weight:800;font-size:10px}.header-buy:hover{transform:translateY(-1px)}
-html:not([data-config-ready="true"]) body{visibility:hidden}
+
 .project-access{max-width:1460px;margin:18px auto 0;padding:18px 24px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr minmax(320px,1.4fr) auto;gap:28px;align-items:center}.project-access>div:first-child{display:flex;align-items:baseline;gap:14px}.project-access>div:first-child strong{font-size:22px;letter-spacing:-.04em}.project-access>div:first-child small{color:#6f7b72}.home-ca{display:flex;align-items:center;gap:10px;min-width:0}.home-ca small{color:#68746b}.home-ca code{font-size:9px;color:#aab5ac;overflow:hidden;text-overflow:ellipsis}.project-access-actions{display:flex;align-items:center;gap:9px}.button.small{min-height:38px;padding:0 14px;font-size:10px}
 @media(max-width:860px){.project-access{margin:16px 16px 0;grid-template-columns:1fr;gap:14px}.home-ca{flex-wrap:wrap}.project-access-actions{flex-wrap:wrap}}
 
@@ -83,3 +83,7 @@ html[data-theme="light"] code{color:#354238}
 html[data-theme="light"] .mega-group{border-color:#e1e6de}
 html[data-theme="light"] .mega-group a:hover{background:transparent;color:#567400}
 @media(max-width:1180px){.tools-menu-groups{grid-template-columns:repeat(3,1fr)}}
+
+/* Interaction hardening: overlays marked hidden can never intercept pointer input. */
+[hidden],.tools-menu[hidden],.mobile-panel[hidden],.wallet-menu[hidden],.home-page[hidden],.workspace-page[hidden],.public-page[hidden]{display:none!important}
+button,a,input,textarea,select,label{pointer-events:auto}

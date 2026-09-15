@@ -2,7 +2,7 @@
   'use strict';
 
   const C = window.NOCKRA_CONFIG;
-  const E = window.ethers;
+  let E = window.ethers || null;
   const ARTIFACT = window.NOCKRA_TOKEN_ARTIFACT;
   const ZERO = '0x0000000000000000000000000000000000000000';
   const MAX_UINT128 = (1n << 128n) - 1n;
@@ -111,9 +111,35 @@
   const esc = s => String(s ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const short = (s,a=6,b=4) => !s ? '—' : s.length <= a+b+3 ? s : `${s.slice(0,a)}…${s.slice(-b)}`;
   const explorer = (type,value) => `${C.chain.explorerUrl}/${type}/${value}`;
-  const isAddress = v => E && E.isAddress(String(v||'').trim());
-  const addr = v => E.getAddress(String(v).trim());
+  const isAddress = v => E ? E.isAddress(String(v||'').trim()) : /^0x[a-fA-F0-9]{40}$/.test(String(v||'').trim());
+  const addr = v => normalizeAddress(v) || String(v||'').trim();
   const nowPlus = seconds => BigInt(Math.floor(Date.now()/1000)+seconds);
+  const normalizeAddress = v => {
+    const raw=String(v||'').trim();
+    if(E){try{return E.getAddress(raw)}catch{}}
+    return /^0x[a-fA-F0-9]{40}$/.test(raw) ? raw : '';
+  };
+  async function ensureEthersReady(){
+    if(E) return E;
+    try { if(window.NOCKRA_ETHERS_READY) await window.NOCKRA_ETHERS_READY; } catch {}
+    E = window.ethers || null;
+    return E;
+  }
+  async function requireEthers(){
+    const lib=await ensureEthersReady();
+    if(!lib) throw new Error('Wallet tools are temporarily unavailable. Please try again.');
+    return lib;
+  }
+  async function attachSigner(){
+    const lib=await ensureEthersReady();
+    if(!lib || !window.ethereum?.request || !state.account) return null;
+    state.browserProvider=new lib.BrowserProvider(window.ethereum,'any');
+    state.signer=await state.browserProvider.getSigner();
+    const a=normalizeAddress(await state.signer.getAddress());
+    if(a) state.account=a;
+    return state.signer;
+  }
+
 
   function errorText(err){
     const raw=String(err?.shortMessage||err?.reason||err?.message||'');
@@ -201,9 +227,12 @@
   }
 
   async function initPublic(){
-    if(!E){setNetworkOffline();return}
-    state.publicProvider=new E.JsonRpcProvider(C.chain.rpcUrl,C.chain.id,{staticNetwork:true});
-    await refreshLive();
+    const lib=await ensureEthersReady();
+    if(!lib){setNetworkOffline();return}
+    try{
+      state.publicProvider=new lib.JsonRpcProvider(C.chain.rpcUrl,C.chain.id,{staticNetwork:true});
+      await refreshLive();
+    }catch{setNetworkOffline()}
   }
   function setNetworkOffline(){
     ['rpcDot','headerRpcDot','workspaceRpcDot'].forEach(id=>$(id)?.classList.add('bad'));if($('rpcStatus'))$('rpcStatus').textContent='Unavailable';if($('ponsGate'))$('ponsGate').textContent='Unavailable';
@@ -238,30 +267,29 @@
     const final=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase();if(final!==C.chain.hexId.toLowerCase())throw new Error(`The wallet is not connected to ${networkName()}.`);state.chainOk=true;
   }
   async function connectWallet(){
-    if(!E)throw new Error('Wallet library is unavailable. Reload the page and try again.');
     if(!window.ethereum?.request)throw new Error('No browser wallet was found.');
     const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
     if(!accounts?.length)throw new Error('No wallet account was selected.');
     await ensureChain();
-    state.browserProvider=new E.BrowserProvider(window.ethereum,'any');
-    state.signer=await state.browserProvider.getSigner();
-    state.account=E.getAddress(await state.signer.getAddress());
+    state.account=normalizeAddress(accounts[0]) || accounts[0];
     state.siteDisconnected=false;
     localStorage.removeItem('nockra:wallet-disconnected');
     updateWalletUI();
-    await refreshLive();
+    try{await attachSigner()}catch{state.signer=null;state.browserProvider=null}
+    if(E && !state.publicProvider){try{state.publicProvider=new E.JsonRpcProvider(C.chain.rpcUrl,C.chain.id,{staticNetwork:true})}catch{}}
+    if(state.publicProvider) void refreshLive();
     return state.account;
   }
   async function restoreWalletSession(){
-    if(!E||!window.ethereum?.request||localStorage.getItem('nockra:wallet-disconnected')==='1')return;
+    if(!window.ethereum?.request||localStorage.getItem('nockra:wallet-disconnected')==='1')return;
     try{
       const accounts=await window.ethereum.request({method:'eth_accounts'});
       if(!accounts?.length)return;
-      state.browserProvider=new E.BrowserProvider(window.ethereum,'any');
-      state.signer=await state.browserProvider.getSigner();
-      state.account=E.getAddress(accounts[0]);
+      state.account=normalizeAddress(accounts[0]) || accounts[0];
       const chain=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase();
       state.chainOk=chain===String(C.chain.hexId).toLowerCase();
+      // Do not delay page routing while a remote library is loading.
+      void attachSigner().catch(()=>{});
     }catch{state.account=null;state.signer=null;state.browserProvider=null}
   }
   function disconnectWallet(){
@@ -270,7 +298,7 @@
     if($('walletMenu'))$('walletMenu').hidden=true;
     updateWalletUI();updatePonsView();
   }
-  async function requireWallet(){if(!state.account||!state.signer)await connectWallet();await ensureChain();return state.signer}
+  async function requireWallet(){if(!state.account)await connectWallet();await ensureChain();await requireEthers();if(!state.signer)await attachSigner();if(!state.signer)throw new Error('The wallet connection could not complete. Check your wallet and try again.');return state.signer}
   function updateWalletUI(){
     const connected=Boolean(state.account);
     const zh=window.NockraI18n?.current?.()==='zh';
@@ -697,15 +725,15 @@
     $('mobileMenuButton').addEventListener('click',()=>{$('mobilePanel').hidden=false;$('mobileMenuButton').setAttribute('aria-expanded','true')});$('closeMobile').addEventListener('click',()=>{$('mobilePanel').hidden=true;$('mobileMenuButton').setAttribute('aria-expanded','false')});$('mobilePanel').addEventListener('click',e=>{if(e.target.closest('a'))$('mobilePanel').hidden=true});
     window.addEventListener('hashchange',route);window.addEventListener('popstate',route);
     if(window.ethereum){
-      window.ethereum.on?.('accountsChanged',async accounts=>{if(localStorage.getItem('nockra:wallet-disconnected')==='1'){state.account=null;state.signer=null;state.browserProvider=null;updateWalletUI();return}state.account=accounts?.[0]?E.getAddress(accounts[0]):null;state.signer=null;state.browserProvider=null;if(state.account){try{state.browserProvider=new E.BrowserProvider(window.ethereum,'any');state.signer=await state.browserProvider.getSigner()}catch{}}updateWalletUI();await refreshLive();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])});
-      window.ethereum.on?.('chainChanged',async()=>{if(!state.account)return;state.signer=null;state.browserProvider=null;try{state.browserProvider=new E.BrowserProvider(window.ethereum,'any');state.signer=await state.browserProvider.getSigner();state.chainOk=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase()===String(C.chain.hexId).toLowerCase()}catch{state.chainOk=false}updateWalletUI();await refreshLive()})
+      window.ethereum.on?.('accountsChanged',async accounts=>{if(localStorage.getItem('nockra:wallet-disconnected')==='1'){state.account=null;state.signer=null;state.browserProvider=null;updateWalletUI();return}state.account=accounts?.[0]?(normalizeAddress(accounts[0])||accounts[0]):null;state.signer=null;state.browserProvider=null;if(state.account)void attachSigner().catch(()=>{});updateWalletUI();if(state.publicProvider)await refreshLive();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])});
+      window.ethereum.on?.('chainChanged',async()=>{if(!state.account)return;state.signer=null;state.browserProvider=null;try{state.chainOk=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase()===String(C.chain.hexId).toLowerCase();void attachSigner().catch(()=>{})}catch{state.chainOk=false}updateWalletUI();if(state.publicProvider)await refreshLive()})
     }
   }
 
   async function boot(){
     applyTheme(localStorage.getItem('nockra:theme')||'dark');
     hydratePublicConfig();
-    renderToolNavigation();renderContracts();setupEvents();await restoreWalletSession();updateWalletUI();route();window.NockraI18n?.apply(document);await initPublic();
+    renderToolNavigation();renderContracts();setupEvents();await restoreWalletSession();updateWalletUI();route();window.NockraI18n?.apply(document);void initPublic();
   }
   boot();
 })();

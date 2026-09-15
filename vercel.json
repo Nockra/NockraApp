@@ -1,8 +1,12 @@
 {
   "cleanUrls": true,
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/nockra", "destination": "/index.html" },
+    { "source": "/docs", "destination": "/index.html" },
+    { "source": "/privacy", "destination": "/index.html" },
+    { "source": "/terms", "destination": "/index.html" },
+    { "source": "/disclaimer", "destination": "/index.html" },
+    { "source": "/cookies", "destination": "/index.html" }
   ],
   "headers": [
     {

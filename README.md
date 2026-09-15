@@ -1,4 +1,12 @@
-# Nockra final pack
+# Nockra Final Stable Pack
+
+This build includes an interaction-loader fix so the UI does not wait for external blockchain libraries before navigation, theme, language, tool routing, and menus become usable. Ethers loads in the background with parallel CDN fallbacks. Wallet authorization and chain switching use the injected wallet directly, while contract actions wait for the library only when needed.
+
+## Deployment
+
+Deploy the **contents of this folder** as the site root. `index.html`, `config.json`, `vercel.json`, `_redirects`, `app.js`, and `bootstrap.js` must stay at the root.
+
+The known public routes (`/nockra`, `/docs`, `/privacy`, `/terms`, `/disclaimer`, `/cookies`) have both physical static fallbacks and Vercel rewrites.
 
 Production-oriented Robinhood Chain token-tooling interface with the Pons V2 launch flow.
 
