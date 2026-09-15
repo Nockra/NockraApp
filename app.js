@@ -52,21 +52,41 @@
   ];
 
   const TOOLS = [
-    {id:'token-creator',name:'Token Creator',cat:'Create',icon:'◉',desc:'Deploy a role-based ERC-20 with mint, burn and pause controls.'},
-    {id:'pons-v2',name:'Pons V2 Launch',cat:'Launch',icon:'↗',desc:'Launch through the live Pons V2 factory.',featured:true},
-    {id:'multisender',name:'Multisender',cat:'Distribution',icon:'⇢',desc:'Send ETH or ERC-20 assets to multiple recipients.'},
-    {id:'revoke',name:'Revoke Ownership',cat:'Controls',icon:'◇',desc:'Renounce Ownable control or selected AccessControl roles.'},
-    {id:'mint',name:'Mint Tokens',cat:'Controls',icon:'＋',desc:'Mint on contracts that expose a supported mint function.'},
-    {id:'burn',name:'Burn Tokens',cat:'Controls',icon:'◔',desc:'Burn tokens from the connected wallet.'},
-    {id:'create-pool',name:'Create Liquidity Pool',cat:'Liquidity',icon:'≋',desc:'Create and initialize a Uniswap V3 pool.'},
-    {id:'add-liquidity',name:'Add Liquidity',cat:'Liquidity',icon:'⌁',desc:'Mint a Uniswap V3 LP position.'},
-    {id:'remove-liquidity',name:'Remove Liquidity',cat:'Liquidity',icon:'⌁',desc:'Decrease and collect a V3 LP position.'},
-    {id:'pause',name:'Pause Token',cat:'Controls',icon:'Ⅱ',desc:'Call pause() on compatible token contracts.'},
-    {id:'unpause',name:'Unpause Token',cat:'Controls',icon:'▷',desc:'Call unpause() on compatible token contracts.'},
-    {id:'block',name:'Block Account',cat:'Controls',icon:'⊗',desc:'Call a supported blocklist pattern after simulation.'},
-    {id:'unblock',name:'Unblock Account',cat:'Controls',icon:'⊘',desc:'Call a supported unblock pattern after simulation.'},
-    {id:'token-page',name:'Token Page',cat:'Inspect',icon:'▤',desc:'Read live ERC-20 supply, wallet balance and controls.'}
+    {id:'token-creator',name:'Token Creator',cat:'Create',icon:'token',desc:'Deploy a role-based ERC-20 with mint, burn and pause controls.'},
+    {id:'pons-v2',name:'Pons V2 Launch',cat:'Launch',icon:'launch',desc:'Launch through the live Pons V2 factory.',featured:true},
+    {id:'multisender',name:'Multisender',cat:'Distribution',icon:'send',desc:'Send ETH or ERC-20 assets to multiple recipients.'},
+    {id:'revoke',name:'Revoke Ownership',cat:'Controls',icon:'lock',desc:'Renounce Ownable control or selected AccessControl roles.'},
+    {id:'mint',name:'Mint Tokens',cat:'Controls',icon:'plus',desc:'Mint on contracts that expose a supported mint function.'},
+    {id:'burn',name:'Burn Tokens',cat:'Controls',icon:'burn',desc:'Burn tokens from the connected wallet.'},
+    {id:'create-pool',name:'Create Liquidity Pool',cat:'Liquidity',icon:'pool',desc:'Create and initialize a Uniswap V3 pool.'},
+    {id:'add-liquidity',name:'Add Liquidity',cat:'Liquidity',icon:'liquidity',desc:'Mint a Uniswap V3 LP position.'},
+    {id:'remove-liquidity',name:'Remove Liquidity',cat:'Liquidity',icon:'remove',desc:'Decrease and collect a V3 LP position.'},
+    {id:'pause',name:'Pause Token',cat:'Controls',icon:'pause',desc:'Call pause() on compatible token contracts.'},
+    {id:'unpause',name:'Unpause Token',cat:'Controls',icon:'play',desc:'Call unpause() on compatible token contracts.'},
+    {id:'block',name:'Block Account',cat:'Controls',icon:'block',desc:'Call a supported blocklist pattern after simulation.'},
+    {id:'unblock',name:'Unblock Account',cat:'Controls',icon:'unblock',desc:'Call a supported unblock pattern after simulation.'},
+    {id:'token-page',name:'Token Page',cat:'Inspect',icon:'page',desc:'Read live ERC-20 supply, wallet balance and controls.'}
   ];
+  function iconSvg(name){
+    const common='fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
+    const paths={
+      token:'<circle cx="12" cy="12" r="7"/><path d="M9 9h6v6H9z"/>',
+      launch:'<circle cx="12" cy="12" r="3.2"/><path d="M4.8 12a7.2 7.2 0 0 1 7.2-7.2M19.2 12a7.2 7.2 0 0 1-7.2 7.2"/>',
+      send:'<circle cx="6" cy="7" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="17" r="2"/><path d="M8 7.8l8 3M8 16.2l8-3"/>',
+      lock:'<rect x="6" y="10" width="12" height="9" rx="2"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/>',
+      plus:'<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>',
+      burn:'<path d="M12 3c1 4-2 5-2 8 0 2 1 3 2 3s2-1 2-3c2 2 3 4 3 6a5 5 0 0 1-10 0c0-4 3-6 5-14Z"/>',
+      pool:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+      liquidity:'<path d="M4 15c4-6 7-6 10 0 2 4 4 4 6 0"/><path d="M4 9c4-6 7-6 10 0 2 4 4 4 6 0"/>',
+      remove:'<path d="M4 15c4-6 7-6 10 0 2 4 4 4 6 0"/><path d="M8 7h8"/>',
+      pause:'<circle cx="12" cy="12" r="8"/><path d="M10 9v6M14 9v6"/>',
+      play:'<path d="M7 6a8 8 0 1 0 10 0"/><path d="M12 4v8"/>',
+      block:'<circle cx="12" cy="12" r="8"/><path d="m7 7 10 10"/>',
+      unblock:'<path d="M5 5l14 14"/><path d="M17 7a8 8 0 0 0-10 10"/>',
+      page:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5M10 12h5M10 16h5"/>'
+    };
+    return `<svg viewBox="0 0 24 24" aria-hidden="true" ${common}>${paths[name]||paths.page}</svg>`;
+  }
   const GROUP_ORDER = ['Create','Launch','Liquidity','Distribution','Controls','Inspect'];
   const CATEGORY_COPY = {
     Create:'Start a token journey.', Launch:'Go live through Pons V2.', Liquidity:'Work with Uniswap V3.',
@@ -75,7 +95,7 @@
 
   const state = {
     publicProvider: null,browserProvider:null,signer:null,account:null,chainOk:false,
-    block:null,pons:null,launchConfigs:[],activeFilter:'All',controlInspection:null
+    block:null,pons:null,launchConfigs:[],activeFilter:'All',controlInspection:null,ponsLogoUri:'',siteDisconnected:false
   };
 
   const safeConfigString = v => typeof v === 'string' ? v.trim() : '';
@@ -121,9 +141,18 @@
   function selectField(label,id,options,extra=''){
     return `<label class="field"><span class="field-title"><span>${label}</span>${extra?`<em>${extra}</em>`:''}</span><select class="select" id="${id}" name="${id}">${options.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('')}</select></label>`;
   }
+  function imageFileField(label,id,extra=''){
+    return `<label class="field"><span class="field-title"><span>${label}</span>${extra?`<em>${extra}</em>`:''}</span><span class="file-drop"><span class="file-preview" id="${id}Preview"><span>PNG<br>JPG<br>WEBP</span></span><span class="file-drop-copy"><strong>Select image</strong><small>Choose a square token image. Large images are optimized before upload.</small></span><input class="file-input" id="${id}" name="${id}" type="file" accept="image/png,image/jpeg,image/webp" /></span></label>`;
+  }
+  function safeProfileUrl(value){
+    const v=String(value||'').trim();if(!v)return '';try{const u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}
+  }
+  function tokenProfileKey(address){return `nockra:token-profile:${String(address||'').toLowerCase()}`}
+  function saveLocalTokenProfile(address,profile){try{localStorage.setItem(tokenProfileKey(address),JSON.stringify(profile))}catch{}}
+  function getLocalTokenProfile(address){try{const raw=localStorage.getItem(tokenProfileKey(address));return raw?JSON.parse(raw):null}catch{return null}}
   function panel(title,body,cls=''){return `<section class="panel ${cls}"><h2>${title}</h2>${body}</section>`}
   function button(label,cls='action-button',type='submit',id=''){return `<button ${id?`id="${id}"`:''} class="${cls}" type="${type}">${label}</button>`}
-  function txLink(hash,label='View transaction'){return `<a href="${explorer('tx',hash)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`}
+  function txLink(hash,label='View transaction'){return `<a href="${explorer('tx',hash)}" target="_blank" rel="noopener noreferrer">${label}</a>`}
   function fmtUnits(value,decimals=18,max=6){
     if(value==null)return '—';const s=E.formatUnits(value,decimals);const [i,f='']=s.split('.');const ff=f.replace(/0+$/,'').slice(0,max);return ff?`${i}.${ff}`:i;
   }
@@ -149,8 +178,8 @@
 
   function renderToolNavigation(){
     const grouped=GROUP_ORDER.map(cat=>[cat,TOOLS.filter(t=>t.cat===cat)]).filter(([,items])=>items.length);
-    $('toolsMenuGroups').innerHTML=grouped.map(([cat,items])=>`<div class="mega-group"><h3>${cat}</h3>${items.map(t=>`<a href="#tool/${t.id}"><span class="mega-icon">${t.icon}</span><span>${t.name}${t.featured?'<span class="tool-badge">LIVE</span>':''}</span></a>`).join('')}</div>`).join('');
-    $('sidebarGroups').innerHTML=grouped.map(([cat,items])=>`<div class="sidebar-group"><strong>${cat}</strong>${items.map(t=>`<button class="sidebar-tool" data-route-tool="${t.id}"><span>${t.icon}</span><span>${t.name}</span></button>`).join('')}</div>`).join('');
+    $('toolsMenuGroups').innerHTML=grouped.map(([cat,items])=>`<div class="mega-group"><h3>${cat}</h3>${items.map(t=>`<a href="/#tool/${t.id}"><span class="mega-icon">${iconSvg(t.icon)}</span><span>${t.name}${t.featured?'<span class="tool-badge">LIVE</span>':''}</span></a>`).join('')}</div>`).join('');
+    $('sidebarGroups').innerHTML=grouped.map(([cat,items])=>`<div class="sidebar-group"><strong>${cat}</strong>${items.map(t=>`<button class="sidebar-tool" data-route-tool="${t.id}"><span>${iconSvg(t.icon)}</span><span>${t.name}</span></button>`).join('')}</div>`).join('');
     const cats=['All',...GROUP_ORDER.filter(c=>TOOLS.some(t=>t.cat===c))];
     $('categoryFilter').innerHTML=cats.map(c=>`<button type="button" data-filter="${c}" class="${c==='All'?'active':''}">${c}</button>`).join('');
     renderToolGrid();
@@ -158,7 +187,7 @@
   function renderToolGrid(){
     const q=($('toolSearch')?.value||'').trim().toLowerCase();
     const groups=GROUP_ORDER.map(cat=>[cat,TOOLS.filter(t=>(state.activeFilter==='All'||state.activeFilter===cat)&&t.cat===cat&&(t.name.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)))]).filter(([,i])=>i.length);
-    $('toolGrid').innerHTML=groups.length?groups.map(([cat,items])=>`<article class="tool-group-card"><div class="tool-group-head"><small>${cat.toUpperCase()}</small><h3>${CATEGORY_COPY[cat]}</h3></div>${items.map(t=>`<button class="tool-item ${t.featured?'featured':''}" data-route-tool="${t.id}" type="button"><span class="tool-icon">${t.icon}</span><span><strong>${t.name}${t.featured?'<span class="tool-badge">LIVE</span>':''}</strong><small>${t.desc}</small></span><span class="tool-arrow">↗</span></button>`).join('')}</article>`).join(''):`<div class="search-empty">No tool matches that search.</div>`;
+    $('toolGrid').innerHTML=groups.length?groups.map(([cat,items])=>`<article class="tool-group-card"><div class="tool-group-head"><small>${cat.toUpperCase()}</small><h3>${CATEGORY_COPY[cat]}</h3></div>${items.map(t=>`<button class="tool-item ${t.featured?'featured':''}" data-route-tool="${t.id}" type="button"><span class="tool-icon">${iconSvg(t.icon)}</span><span><strong>${t.name}${t.featured?'<span class="tool-badge">LIVE</span>':''}</strong><small>${t.desc}</small></span></button>`).join('')}</article>`).join(''):`<div class="search-empty">No tool matches that search.</div>`;
   }
   function renderContracts(){
     const rows=[
@@ -168,7 +197,7 @@
       ['Wrapped ETH',C.uniswapV3.weth,'ERC-20 representation of ETH'],
       ['USDG',C.ponsV2.usdG,'Pons-supported pair asset when currently approved']
     ];
-    $('contractList').innerHTML=rows.map(([name,address,note])=>`<div class="contract-row"><div><strong>${name}</strong><small>${note}</small><code>${address}</code></div><a href="${explorer('address',address)}" target="_blank" rel="noopener noreferrer">Blockscout ↗</a></div>`).join('');
+    $('contractList').innerHTML=rows.map(([name,address,note])=>`<div class="contract-row"><div><strong>${name}</strong><small>${note}</small><code>${address}</code></div><a href="${explorer('address',address)}" target="_blank" rel="noopener noreferrer">Blockscout </a></div>`).join('');
   }
 
   async function initPublic(){
@@ -203,18 +232,57 @@
       try{await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:C.chain.hexId}]})}
       catch(err){
         if(err?.code!==4902&&!/unrecognized|not added/i.test(err?.message||''))throw err;
-        await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:C.chain.hexId,chainName:C.chain.name,nativeCurrency:C.chain.nativeCurrency,rpcUrls:[C.chain.rpcUrl],blockExplorerUrls:[C.chain.explorerUrl]}]});
+        await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:C.chain.hexId,chainName:C.chain.name||networkName(),nativeCurrency:C.chain.nativeCurrency,rpcUrls:[C.chain.rpcUrl],blockExplorerUrls:[C.chain.explorerUrl]}]});
       }
     }
     const final=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase();if(final!==C.chain.hexId.toLowerCase())throw new Error(`The wallet is not connected to ${networkName()}.`);state.chainOk=true;
   }
   async function connectWallet(){
-    if(!E)throw new Error('Wallet library is unavailable. Reload the page and try again.');if(!window.ethereum)throw new Error('No browser wallet was found.');
-    await window.ethereum.request({method:'eth_requestAccounts'});await ensureChain();state.browserProvider=new E.BrowserProvider(window.ethereum);state.signer=await state.browserProvider.getSigner();state.account=await state.signer.getAddress();updateWalletUI();await refreshLive();return state.account;
+    if(!E)throw new Error('Wallet library is unavailable. Reload the page and try again.');
+    if(!window.ethereum?.request)throw new Error('No browser wallet was found.');
+    const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
+    if(!accounts?.length)throw new Error('No wallet account was selected.');
+    await ensureChain();
+    state.browserProvider=new E.BrowserProvider(window.ethereum,'any');
+    state.signer=await state.browserProvider.getSigner();
+    state.account=E.getAddress(await state.signer.getAddress());
+    state.siteDisconnected=false;
+    localStorage.removeItem('nockra:wallet-disconnected');
+    updateWalletUI();
+    await refreshLive();
+    return state.account;
+  }
+  async function restoreWalletSession(){
+    if(!E||!window.ethereum?.request||localStorage.getItem('nockra:wallet-disconnected')==='1')return;
+    try{
+      const accounts=await window.ethereum.request({method:'eth_accounts'});
+      if(!accounts?.length)return;
+      state.browserProvider=new E.BrowserProvider(window.ethereum,'any');
+      state.signer=await state.browserProvider.getSigner();
+      state.account=E.getAddress(accounts[0]);
+      const chain=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase();
+      state.chainOk=chain===String(C.chain.hexId).toLowerCase();
+    }catch{state.account=null;state.signer=null;state.browserProvider=null}
+  }
+  function disconnectWallet(){
+    state.account=null;state.signer=null;state.browserProvider=null;state.chainOk=false;state.siteDisconnected=true;
+    localStorage.setItem('nockra:wallet-disconnected','1');
+    if($('walletMenu'))$('walletMenu').hidden=true;
+    updateWalletUI();updatePonsView();
   }
   async function requireWallet(){if(!state.account||!state.signer)await connectWallet();await ensureChain();return state.signer}
   function updateWalletUI(){
-    const label=state.account?short(state.account):'Connect Wallet';$('walletLabel').textContent=label;$('connectWallet').classList.toggle('connected',!!state.account);$('sidebarWalletText').textContent=state.account?short(state.account):'Connect wallet';if($('walletStatusHome'))$('walletStatusHome').textContent=state.account?short(state.account):'Not connected';
+    const connected=Boolean(state.account);
+    const zh=window.NockraI18n?.current?.()==='zh';
+    const label=connected?short(state.account):(zh?'连接钱包':'Connect Wallet');
+    if($('walletLabel'))$('walletLabel').textContent=label;
+    $('connectWallet')?.classList.toggle('connected',connected);
+    if($('sidebarWalletText'))$('sidebarWalletText').textContent=connected?short(state.account):(zh?'连接钱包':'Connect wallet');
+    if($('walletStatusHome'))$('walletStatusHome').textContent=connected?short(state.account):'Not connected';
+    if($('walletMenuAddress'))$('walletMenuAddress').textContent=connected?state.account:'';
+    if($('walletExplorer'))$('walletExplorer').href=connected?explorer('address',state.account):'#';
+    if(!connected&&$('walletMenu'))$('walletMenu').hidden=true;
+    window.NockraI18n?.apply(document);
     updatePonsView();
   }
 
@@ -228,6 +296,7 @@
   function templateTokenCreator(tool){
     return toolHeader(tool,`Deploy a real ERC-20 contract directly from your wallet. The ${coinName()} preset uses OpenZeppelin role-based minting and pausing, 18 decimals, and holder burning.`,`<div><span>Contract model</span><strong>AccessControl</strong></div><div><span>Decimals</span><strong>18</strong></div>`)+
       `<div class="tool-layout"><form class="panel" id="creatorForm" data-action="create-token"><h2>Deploy token</h2><div class="form-grid">${field('Token name','creatorName','Nockra Example')}${field('Symbol','creatorSymbol','NCK')}</div>${field('Initial supply','creatorSupply','1000000','18 decimals')}
+      <div class="profile-fields"><h3>Token profile</h3><p>Optional public links are saved with the local Nockra token profile after deployment. They do not change the ERC-20 contract.</p><div class="form-grid">${field('Website','creatorWebsite','https://example.com','Optional')}${field('X / Twitter','creatorTwitter','https://x.com/name','Optional')}</div><div class="form-grid">${field('Telegram','creatorTelegram','https://t.me/name','Optional')}${field('Discord','creatorDiscord','https://discord.gg/name','Optional')}</div>${textarea('Description','creatorDescription','Short project description','Optional')}</div>
       <div class="notice">Deployment and initial mint are separate on-chain actions. If the initial supply is greater than zero, your wallet will confirm the deployment first and the mint second.</div>
       <div class="switch-row"><span>I understand the deployer receives admin, minter and pauser roles</span><input id="creatorAck" type="checkbox" /></div>
       <div id="creatorMessage" class="tx-message"></div><div class="form-actions">${button(state.account?'Deploy token':'Connect wallet & deploy','action-button', 'submit','creatorButton')}</div></form>
@@ -298,13 +367,13 @@
 
   function templatePons(tool){
     const options=state.launchConfigs.length?state.launchConfigs.map(x=>[String(x.id),`Launch option #${x.id} · curve fee ${(Number(x.curveFeeBps)/100).toFixed(2).replace(/\.00$/,'')}%`]):[['','No launch option available']];
-    return toolHeader(tool,'Launch a token directly through Pons V2. Live factory terms are read again immediately before the wallet transaction.',`<div><span>Factory</span><strong>${short(C.ponsV2.factory)}</strong></div><div><span>Launch fee</span><strong id="ponsMetaFee">${state.pons?fmtEth(state.pons.fee):'Reading…'}</strong></div><div><span>Wallet gate</span><strong id="ponsMetaGate">${state.account?(state.pons?.canLaunch?'Eligible':'Checking'):'Connect to check'}</strong></div>`)+
-      `<form class="tool-layout" data-action="pons-launch" id="ponsForm"><div class="side-stack"><section class="panel"><h2>1. Token metadata</h2><div class="form-grid">${field('Token name','ponsName','Example Token')}${field('Symbol','ponsSymbol','EXAMPLE')}</div>${field('Logo URI','ponsLogo','https://… or ipfs://…','Required by Pons V2')}${textarea('Description','ponsDescription','Describe the token','Optional')}<div class="form-grid">${field('Website','ponsWebsite','https://…','Optional')}${field('X / Twitter','ponsTwitter','https://x.com/…','Optional')}</div><div class="form-grid">${field('Telegram','ponsTelegram','https://t.me/…','Optional')}${field('Discord','ponsDiscord','https://discord.gg/…','Optional')}</div>${field('Farcaster','ponsFarcaster','https://warpcast.com/…','Optional')}</section>
-      <section class="panel"><h2>2. Launch economics</h2>${selectField('Launch config','ponsConfig',options)}${selectField('Pair asset','ponsPair',[['native','ETH'],['usdg','USDG'],['custom','Custom Pons-approved ERC-20']])}<div id="ponsCustomPairWrap" hidden>${field('Custom pair token','ponsCustomPair','0x…')}</div>${field('Creator fee recipient','ponsRecipient',state.account||'Connected wallet','Defaults to connected wallet')}
+    return toolHeader(tool,'Launch a token directly through Pons V2. Live factory terms are read again immediately before the wallet transaction.',`<div><span>Factory</span><strong>${short(C.ponsV2.factory)}</strong></div><div><span>Launch fee</span><strong id="ponsMetaFee">${state.pons?fmtEth(state.pons.fee):'Reading...'}</strong></div><div><span>Wallet gate</span><strong id="ponsMetaGate">${state.account?(state.pons?.canLaunch?'Eligible':'Checking'):'Connect to check'}</strong></div>`)+
+      `<form class="tool-layout" data-action="pons-launch" id="ponsForm"><div class="side-stack"><section class="panel"><h2>1. Token metadata</h2><div class="form-grid">${field('Token name','ponsName','Example Token')}${field('Symbol','ponsSymbol','EXAMPLE')}</div>${imageFileField('Token image','ponsLogoFile','Required by Pons V2')}${textarea('Description','ponsDescription','Describe the token','Optional')}<div class="form-grid">${field('Website','ponsWebsite','https://example.com','Optional')}${field('X / Twitter','ponsTwitter','https://x.com/name','Optional')}</div><div class="form-grid">${field('Telegram','ponsTelegram','https://t.me/name','Optional')}${field('Discord','ponsDiscord','https://discord.gg/name','Optional')}</div>${field('Farcaster','ponsFarcaster','https://warpcast.com/name','Optional')}</section>
+      <section class="panel"><h2>2. Launch economics</h2>${selectField('Launch config','ponsConfig',options)}${selectField('Pair asset','ponsPair',[['native','ETH'],['usdg','USDG'],['custom','Custom Pons-approved ERC-20']])}<div id="ponsCustomPairWrap" hidden>${field('Custom pair token','ponsCustomPair','0x...')}</div>${field('Creator fee recipient','ponsRecipient',state.account||'Connected wallet','Defaults to connected wallet')}
       <div class="form-grid">${field('Creator tax','ponsTax','0','Percent','number','0')}<label class="field"><span class="field-title"><span>Buyback enabled</span><em>Pons setting</em></span><span class="switch-row"><span>Enable buyback</span><input id="ponsBuyback" type="checkbox" /></span></label></div>
       <h3 style="margin-top:24px">Optional initial creator buy</h3><div class="form-grid">${field('Pair asset amount','ponsDevBuy','0')}${field('Minimum tokens out','ponsMinOut','0','Raw token units')}</div>${textarea('Snipe-tax exemptions','ponsExemptions','0xAddress\n0xAddress','Optional, one per line, max 32')}</section></div>
-      <div class="side-stack"><section class="panel"><h2>Live Pons V2 terms</h2><div class="stat-list"><div class="stat-row"><span>Factory launch enabled</span><strong id="ponsLiveEnabled">${state.pons?.enabled?'Yes':'—'}</strong></div><div class="stat-row"><span>Wallet can launch</span><strong id="ponsLiveEligible">${state.account?(state.pons?.canLaunch?'Yes':'No'):'Connect wallet'}</strong></div><div class="stat-row"><span>Launch fee</span><strong id="ponsLiveFee">${state.pons?fmtEth(state.pons.fee):'—'}</strong></div><div class="stat-row"><span>Max creator tax</span><strong id="ponsLiveTax">${state.pons?`${Number(state.pons.maxTax)/100}%`:'—'}</strong></div><div class="stat-row"><span>Launch-and-buy forwarder</span><strong class="address-line" id="ponsLiveForwarder">${state.pons?short(state.pons.forwarder):'—'}</strong></div></div><button type="button" class="action-button secondary" id="refreshPons" style="margin-top:14px">Refresh live terms</button></section>
-      <section class="panel"><h2>Launch review</h2><div class="notice">${coinName()} pins <code>previewLaunchEconomics()</code> into the launch params, simulates the exact call, then asks your wallet to sign. For an initial creator buy, the current <code>launchForwarder()</code> address is read live.</div><div id="ponsMessage" class="tx-message"></div><div class="form-actions">${button(state.account?'Review & launch':'Connect wallet & check eligibility','action-button','submit','ponsButton')}</div></section></div></form><div id="ponsResult"></div>`;
+      <div class="side-stack"><section class="panel"><h2>Live Pons V2 terms</h2><div class="stat-list"><div class="stat-row"><span>Factory launch enabled</span><strong id="ponsLiveEnabled">${state.pons?.enabled?'Yes':'-'}</strong></div><div class="stat-row"><span>Wallet can launch</span><strong id="ponsLiveEligible">${state.account?(state.pons?.canLaunch?'Yes':'No'):'Connect wallet'}</strong></div><div class="stat-row"><span>Launch fee</span><strong id="ponsLiveFee">${state.pons?fmtEth(state.pons.fee):'-'}</strong></div><div class="stat-row"><span>Max creator tax</span><strong id="ponsLiveTax">${state.pons?`${Number(state.pons.maxTax)/100}%`:'-'}</strong></div><div class="stat-row"><span>Launch-and-buy forwarder</span><strong class="address-line" id="ponsLiveForwarder">${state.pons?short(state.pons.forwarder):'-'}</strong></div></div><button type="button" class="action-button secondary" id="refreshPons" style="margin-top:14px">Refresh live terms</button></section>
+      <section class="panel"><h2>Launch review</h2><div class="notice">Nockra pins the current Pons V2 economics into the launch parameters and simulates the exact call before your wallet is asked to sign.</div><div id="ponsMessage" class="tx-message"></div><div class="form-actions">${button(state.account?'Review & launch':'Connect wallet & check eligibility','action-button','submit','ponsButton')}</div></section></div></form><div id="ponsResult"></div>`;
   }
 
   function renderTool(id){
@@ -316,7 +385,7 @@
       'create-pool':templateCreatePool,'add-liquidity':templateAddLiquidity,'remove-liquidity':templateRemoveLiquidity,'token-page':templateTokenPage,'pons-v2':templatePons
     };
     const html=(map[tool.id]||templateTokenPage)(tool);$('toolView').innerHTML=html.replace(/Nockra/g,esc(coinName())).replace(/Robinhood Chain/g,esc(networkName()));document.title=`${tool.name} | ${coinName()}`;
-    wireDynamicToolUI(tool.id);updatePonsView();
+    wireDynamicToolUI(tool.id);updatePonsView();window.NockraI18n?.apply($('toolView'));
   }
 
   async function assertContract(address,label='Contract'){
@@ -343,9 +412,9 @@
       const supplyText=$('creatorSupply').value.trim()||'0';if(!/^\d+(\.\d+)?$/.test(supplyText))throw new Error('Initial supply must be a non-negative number.');const supply=E.parseUnits(supplyText,18);
       const factory=new E.ContractFactory(ARTIFACT.abi,ARTIFACT.bytecode,state.signer);const deployTx=await factory.getDeployTransaction(name,symbol);deployTx.from=state.account;
       busy(btn,true,'Estimating deployment…');const gas=await state.publicProvider.estimateGas(deployTx);message('creatorMessage',`Deployment simulation passed. Estimated gas: ${gas.toLocaleString()}.`);
-      busy(btn,true,'Confirm deployment…');const contract=await factory.deploy(name,symbol);const deployment=contract.deploymentTransaction();message('creatorMessage',`Deployment submitted. Waiting for confirmation… ${deployment.hash}`);busy(btn,true,'Waiting for deployment…');await contract.waitForDeployment();const token=await contract.getAddress();const receipt=await deployment.wait();if(!receipt||receipt.status!==1)throw new Error('Deployment receipt did not succeed.');
+      busy(btn,true,'Confirm deployment...');const contract=await factory.deploy(name,symbol);const deployment=contract.deploymentTransaction();message('creatorMessage',`Deployment submitted. Waiting for confirmation... ${deployment.hash}`);busy(btn,true,'Waiting for deployment...');await contract.waitForDeployment();const token=await contract.getAddress();const receipt=await deployment.wait();if(!receipt||receipt.status!==1)throw new Error('Deployment receipt did not succeed.');const localProfile={description:$('creatorDescription')?.value.trim()||'',website:safeProfileUrl($('creatorWebsite')?.value),twitter:safeProfileUrl($('creatorTwitter')?.value),telegram:safeProfileUrl($('creatorTelegram')?.value),discord:safeProfileUrl($('creatorDiscord')?.value)};if(Object.values(localProfile).some(Boolean))saveLocalTokenProfile(token,localProfile);
       if(supply>0n){busy(btn,true,'Confirm initial mint…');const tokenWrite=new E.Contract(token,ARTIFACT.abi,state.signer);try{await tokenWrite.mint.staticCall(state.account,supply);const tx=await tokenWrite.mint(state.account,supply);message('creatorMessage',`Token deployed at ${token}. Initial mint submitted: ${tx.hash}. Waiting…`);const mr=await tx.wait();if(!mr||mr.status!==1)throw new Error('Initial mint receipt failed.')}catch(err){message('creatorMessage',`The token contract was deployed at ${token}, but the initial mint did not complete: ${errorText(err)} <br>${txLink(deployment.hash,'View deployment')}`,'error',true);toast('Token deployed, initial mint did not complete.','warn');return}}
-      message('creatorMessage',`<strong>${esc(name)} (${esc(symbol)}) is deployed.</strong><br><code>${token}</code><br>${txLink(deployment.hash,'View deployment')} · <a href="#tool/token-page?token=${token}">Open Token Page →</a>`,'success',true);toast('Token deployment confirmed.','success');
+      message('creatorMessage',`<strong>${esc(name)} (${esc(symbol)}) is deployed.</strong><br><code>${token}</code><br>${txLink(deployment.hash,'View deployment')} · <a href="#tool/token-page?token=${token}">Open Token Page </a>`,'success',true);toast('Token deployment confirmed.','success');
     }catch(err){message('creatorMessage',errorText(err),'error')}finally{busy(btn,false);updateWalletUI()}
   }
 
@@ -358,7 +427,7 @@
       let completed=0;for(let i=0;i<rows.length;i++){const r=rows[i];busy(btn,true,`Recipient ${i+1} of ${rows.length}…`);let tx;
         if(native){await state.signer.estimateGas({to:r.address,value:r.amount});tx=await state.signer.sendTransaction({to:r.address,value:r.amount})}
         else{const token=new E.Contract(info.address,ERC20,state.signer);await token.transfer.staticCall(r.address,r.amount);tx=await token.transfer(r.address,r.amount)}
-        const item=document.createElement('div');item.className='progress-item';item.innerHTML=`<span>${i+1}. ${short(r.address)}</span><strong>Pending ${short(tx.hash,8,6)}</strong>`;progress.appendChild(item);const receipt=await tx.wait();if(!receipt||receipt.status!==1)throw new Error(`Transfer ${i+1} was mined but failed.`);item.innerHTML=`<span>${i+1}. ${short(r.address)}</span><strong><a href="${explorer('tx',tx.hash)}" target="_blank" rel="noopener noreferrer">Confirmed ↗</a></strong>`;completed++}
+        const item=document.createElement('div');item.className='progress-item';item.innerHTML=`<span>${i+1}. ${short(r.address)}</span><strong>Pending ${short(tx.hash,8,6)}</strong>`;progress.appendChild(item);const receipt=await tx.wait();if(!receipt||receipt.status!==1)throw new Error(`Transfer ${i+1} was mined but failed.`);item.innerHTML=`<span>${i+1}. ${short(r.address)}</span><strong><a href="${explorer('tx',tx.hash)}" target="_blank" rel="noopener noreferrer">Confirmed </a></strong>`;completed++}
       message('multiMessage',`All ${completed} transfers are confirmed on ${networkName()}.`,'success');toast('Multisender run complete.','success');
     }catch(err){message('multiMessage',errorText(err),'error')}finally{busy(btn,false)}
   }
@@ -417,8 +486,8 @@
   function sortPair(a,b){const aa=addr(a),bb=addr(b);if(aa.toLowerCase()===bb.toLowerCase())throw new Error('Token A and Token B must be different contracts.');return aa.toLowerCase()<bb.toLowerCase()?{token0:aa,token1:bb,aIs0:true}:{token0:bb,token1:aa,aIs0:false}}
 
   async function actionCreatePool(){
-    const btn=$('poolButton');clearMessage('poolMessage');try{await requireWallet();busy(btn,true,'Reading token contracts…');const [a,b]=await Promise.all([basicToken($('poolTokenA').value,'Token A'),basicToken($('poolTokenB').value,'Token B')]);const sorted=sortPair(a.address,b.address);const fee=Number($('poolFee').value);const v3f=new E.Contract(C.uniswapV3.factory,V3_FACTORY,state.publicProvider);const [existing,spacing]=await Promise.all([v3f.getPool(sorted.token0,sorted.token1,fee),v3f.feeAmountTickSpacing(fee)]);if(BigInt(spacing)===0n)throw new Error('The selected fee tier is not enabled by this Uniswap V3 factory.');if(existing!==ZERO){message('poolMessage',`A pool already exists at <code>${existing}</code>. <a href="${explorer('address',existing)}" target="_blank" rel="noopener noreferrer">View pool ↗</a>`,'success',true);return}
-      const dec0=sorted.aIs0?a.decimals:b.decimals,dec1=sorted.aIs0?b.decimals:a.decimals;const sqrt=sqrtPriceX96($('poolPrice').value,dec0,dec1,!sorted.aIs0);const pm=new E.Contract(C.uniswapV3.positionManager,V3_POSITION,state.signer);busy(btn,true,'Simulating pool creation…');const predicted=await pm.createAndInitializePoolIfNecessary.staticCall(sorted.token0,sorted.token1,fee,sqrt);message('poolMessage',`Simulation passed. Predicted pool: ${predicted}. sqrtPriceX96: ${sqrt}.`);busy(btn,true,'Confirm in wallet…');const tx=await pm.createAndInitializePoolIfNecessary(sorted.token0,sorted.token1,fee,sqrt);message('poolMessage',`Pool creation submitted. Waiting for confirmation… ${tx.hash}`);busy(btn,true,'Waiting for confirmation…');const receipt=await tx.wait();if(!receipt||receipt.status!==1)throw new Error('Pool creation was mined but failed.');const pool=await v3f.getPool(sorted.token0,sorted.token1,fee);if(pool===ZERO)throw new Error('The transaction confirmed, but the V3 factory still reports no pool for this pair and fee.');message('poolMessage',`Pool created and initialized at <code>${pool}</code>. ${txLink(tx.hash)} · <a href="${explorer('address',pool)}" target="_blank" rel="noopener noreferrer">View pool ↗</a>`,'success',true);toast('Liquidity pool confirmed.','success')
+    const btn=$('poolButton');clearMessage('poolMessage');try{await requireWallet();busy(btn,true,'Reading token contracts…');const [a,b]=await Promise.all([basicToken($('poolTokenA').value,'Token A'),basicToken($('poolTokenB').value,'Token B')]);const sorted=sortPair(a.address,b.address);const fee=Number($('poolFee').value);const v3f=new E.Contract(C.uniswapV3.factory,V3_FACTORY,state.publicProvider);const [existing,spacing]=await Promise.all([v3f.getPool(sorted.token0,sorted.token1,fee),v3f.feeAmountTickSpacing(fee)]);if(BigInt(spacing)===0n)throw new Error('The selected fee tier is not enabled by this Uniswap V3 factory.');if(existing!==ZERO){message('poolMessage',`A pool already exists at <code>${existing}</code>. <a href="${explorer('address',existing)}" target="_blank" rel="noopener noreferrer">View pool </a>`,'success',true);return}
+      const dec0=sorted.aIs0?a.decimals:b.decimals,dec1=sorted.aIs0?b.decimals:a.decimals;const sqrt=sqrtPriceX96($('poolPrice').value,dec0,dec1,!sorted.aIs0);const pm=new E.Contract(C.uniswapV3.positionManager,V3_POSITION,state.signer);busy(btn,true,'Simulating pool creation…');const predicted=await pm.createAndInitializePoolIfNecessary.staticCall(sorted.token0,sorted.token1,fee,sqrt);message('poolMessage',`Simulation passed. Predicted pool: ${predicted}. sqrtPriceX96: ${sqrt}.`);busy(btn,true,'Confirm in wallet…');const tx=await pm.createAndInitializePoolIfNecessary(sorted.token0,sorted.token1,fee,sqrt);message('poolMessage',`Pool creation submitted. Waiting for confirmation… ${tx.hash}`);busy(btn,true,'Waiting for confirmation…');const receipt=await tx.wait();if(!receipt||receipt.status!==1)throw new Error('Pool creation was mined but failed.');const pool=await v3f.getPool(sorted.token0,sorted.token1,fee);if(pool===ZERO)throw new Error('The transaction confirmed, but the V3 factory still reports no pool for this pair and fee.');message('poolMessage',`Pool created and initialized at <code>${pool}</code>. ${txLink(tx.hash)} · <a href="${explorer('address',pool)}" target="_blank" rel="noopener noreferrer">View pool </a>`,'success',true);toast('Liquidity pool confirmed.','success')
     }catch(err){message('poolMessage',errorText(err),'error')}finally{busy(btn,false)}}
 
   async function actionAddLiquidity(){
@@ -433,10 +502,22 @@
 
   async function actionInspectToken(){
     const btn=$('inspectButton');clearMessage('inspectMessage');const profile=$('tokenProfile');profile.hidden=true;try{busy(btn,true,'Reading token…');const info=await tokenInfo($('inspectToken').value,true);let owner=null,paused=null,roles=[];try{owner=await new E.Contract(info.address,OWNABLE,state.publicProvider).owner()}catch{}try{paused=Boolean(await new E.Contract(info.address,['function paused() view returns (bool)'],state.publicProvider).paused())}catch{}if(state.account){const ac=new E.Contract(info.address,ACCESS,state.publicProvider);for(const [g,label] of [['DEFAULT_ADMIN_ROLE','Admin'],['MINTER_ROLE','Minter'],['PAUSER_ROLE','Pauser']]){try{const r=await ac[g]();roles.push([label,Boolean(await ac.hasRole(r,state.account))])}catch{}}}
-      profile.hidden=false;profile.innerHTML=`<section class="panel" style="margin-top:14px"><div class="tool-hero" style="margin:0"><div><span class="eyebrow lime">LIVE TOKEN PROFILE</span><h1 style="font-size:42px">${esc(info.name)} <span style="color:var(--lime)">${esc(info.symbol)}</span></h1><p><code>${info.address}</code></p></div><a class="button ghost" href="${explorer('address',info.address)}" target="_blank" rel="noopener noreferrer">Open Blockscout ↗</a></div><div class="token-summary"><div><small>Total supply</small><strong>${fmtUnits(info.supply,info.decimals)} ${esc(info.symbol)}</strong></div><div><small>Decimals</small><strong>${info.decimals}</strong></div><div><small>Your balance</small><strong>${info.balance==null?'Connect wallet':`${fmtUnits(info.balance,info.decimals)} ${esc(info.symbol)}`}</strong></div><div><small>Paused</small><strong>${paused==null?'Not exposed':String(paused)}</strong></div></div><div class="stat-list">${owner?`<div class="stat-row"><span>owner()</span><strong class="address-line">${esc(owner)}</strong></div>`:''}${roles.map(r=>`<div class="stat-row"><span>Connected wallet has ${r[0]} role</span><strong>${r[1]?'Yes':'No'}</strong></div>`).join('')}<div class="stat-row"><span>Contract</span><strong class="address-line">${info.address}</strong></div></div><div class="form-actions"><a class="action-button secondary" href="#tool/mint?token=${info.address}">Mint tool</a><a class="action-button secondary" href="#tool/burn?token=${info.address}">Burn tool</a><a class="action-button secondary" href="#tool/revoke?token=${info.address}">Control tool</a></div></section>`;message('inspectMessage',`Live token data loaded from ${networkName()}.`,'success')
+      const localProfile=getLocalTokenProfile(info.address);const socialLinks=localProfile?Object.entries({Website:localProfile.website,X:localProfile.twitter,Telegram:localProfile.telegram,Discord:localProfile.discord}).filter(([,u])=>u):[];profile.hidden=false;profile.innerHTML=`<section class="panel" style="margin-top:14px"><div class="tool-hero" style="margin:0"><div><span class="eyebrow lime">LIVE TOKEN PROFILE</span><h1 style="font-size:42px">${esc(info.name)} <span style="color:var(--lime)">${esc(info.symbol)}</span></h1><p><code>${info.address}</code></p>${localProfile?.description?`<p>${esc(localProfile.description)}</p>`:''}${socialLinks.length?`<div class="token-socials">${socialLinks.map(([label,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${label}</a>`).join('')}</div>`:''}</div><a class="button ghost" href="${explorer('address',info.address)}" target="_blank" rel="noopener noreferrer">Open Blockscout</a></div><div class="token-summary"><div><small>Total supply</small><strong>${fmtUnits(info.supply,info.decimals)} ${esc(info.symbol)}</strong></div><div><small>Decimals</small><strong>${info.decimals}</strong></div><div><small>Your balance</small><strong>${info.balance==null?'Connect wallet':`${fmtUnits(info.balance,info.decimals)} ${esc(info.symbol)}`}</strong></div><div><small>Paused</small><strong>${paused==null?'Not exposed':String(paused)}</strong></div></div><div class="stat-list">${owner?`<div class="stat-row"><span>owner()</span><strong class="address-line">${esc(owner)}</strong></div>`:''}${roles.map(r=>`<div class="stat-row"><span>Connected wallet has ${r[0]} role</span><strong>${r[1]?'Yes':'No'}</strong></div>`).join('')}<div class="stat-row"><span>Contract</span><strong class="address-line">${info.address}</strong></div></div><div class="form-actions"><a class="action-button secondary" href="#tool/mint?token=${info.address}">Mint tool</a><a class="action-button secondary" href="#tool/burn?token=${info.address}">Burn tool</a><a class="action-button secondary" href="#tool/revoke?token=${info.address}">Control tool</a></div></section>`;message('inspectMessage',`Live token data loaded from ${networkName()}.`,'success')
     }catch(err){message('inspectMessage',errorText(err),'error')}finally{busy(btn,false)}}
 
-  function validatePonsLogo(value){const v=String(value||'').trim();if(!v)throw new Error('Pons V2 requires a logo URI.');if(!/^https:\/\//i.test(v)&&!/^ipfs:\/\//i.test(v))throw new Error('Logo URI must start with https:// or ipfs://.');if(new TextEncoder().encode(v).length>512)throw new Error('Logo URI is longer than 512 bytes.');return v}
+  async function imageToPayload(file){
+    const allowed=['image/png','image/jpeg','image/webp'];if(!allowed.includes(file?.type))throw new Error('Choose a PNG, JPG or WebP image.');if(file.size>8*1024*1024)throw new Error('Choose an image smaller than 8 MB.');
+    let blob=file;
+    if(file.size>1400000&&file.type!=='image/webp'){
+      try{const bitmap=await createImageBitmap(file);const max=1200,scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',.86));bitmap.close()}catch{}
+    }
+    if(!blob||blob.size>3500000)throw new Error('The selected image is too large to upload.');
+    const bytes=new Uint8Array(await blob.arrayBuffer());let binary='';const chunk=0x8000;for(let i=0;i<bytes.length;i+=chunk)binary+=String.fromCharCode(...bytes.subarray(i,i+chunk));return {name:(file.name||'token-image').replace(/[^a-zA-Z0-9._-]/g,'_'),type:blob.type||file.type,data:btoa(binary)};
+  }
+  async function uploadPonsLogo(){
+    if(state.ponsLogoUri)return state.ponsLogoUri;const input=$('ponsLogoFile'),file=input?.files?.[0];if(!file)throw new Error('Select a token image before launching.');const payload=await imageToPayload(file);const endpoint=safeConfigString(C.imageUploadEndpoint)||'/api/upload';let r;try{r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)})}catch{throw new Error('The image upload could not be completed. Please try again.')}if(!r.ok)throw new Error('The image upload could not be completed. Please try again.');let out;try{out=await r.json()}catch{throw new Error('The image upload could not be completed. Please try again.')}const uri=String(out?.uri||'').trim();if(!/^ipfs:\/\/[A-Za-z0-9]+/i.test(uri)&&!/^https:\/\//i.test(uri))throw new Error('The image upload could not be completed. Please try again.');if(new TextEncoder().encode(uri).length>512)throw new Error('The image upload could not be completed. Please try again.');state.ponsLogoUri=uri;return uri;
+  }
+
   async function ponsPair(){
     const mode=$('ponsPair').value;let address=ZERO;if(mode==='usdg')address=C.ponsV2.usdG;else if(mode==='custom')address=$('ponsCustomPair').value.trim();if(address===ZERO)return {address:ZERO,symbol:'ETH',decimals:18,approved:true};const t=await basicToken(address,'Pair token');const f=new E.Contract(C.ponsV2.factory,PONS_READ,state.publicProvider);const approved=Boolean(await f.approvedPairTokens(t.address));if(!approved)throw new Error(`${t.symbol} is not currently approved as a Pons V2 pair asset.`);return {...t,approved}
   }
@@ -444,11 +525,11 @@
   async function requirePonsLaunch(){await requireWallet();const p=await readPons();state.pons=p;state.launchConfigs=p.configs;updatePonsView();if(!p.canLaunch)throw new Error('The live Pons V2 launch gate does not currently allow this wallet to create a launch.');if(!p.configs.length)throw new Error('Pons V2 currently reports no enabled launch options.');return p}
   function ponsParams(meta,socials,recipient,taxBps,buyback,economics){return [meta.name,meta.symbol,meta.logo,meta.description,[socials.twitter||'',socials.telegram||'',socials.discord||'',socials.website||'',socials.farcaster||''],recipient,taxBps,buyback,economics,randomSalt()]}
   async function actionPonsLaunch(){
-    const btn=$('ponsButton');clearMessage('ponsMessage');try{busy(btn,true,'Reading live Pons terms…');const p=await requirePonsLaunch();const name=$('ponsName').value.trim(),symbol=$('ponsSymbol').value.trim().toUpperCase(),logo=validatePonsLogo($('ponsLogo').value),description=$('ponsDescription').value.trim();if(!name||name.length>64)throw new Error('Token name must be 1 to 64 characters.');if(!/^[A-Z0-9]{2,11}$/.test(symbol))throw new Error('Symbol must be 2 to 11 uppercase letters or numbers.');const pair=await ponsPair();const recipientRaw=$('ponsRecipient').value.trim()||state.account;if(!isAddress(recipientRaw))throw new Error('Creator fee recipient is not a valid EVM address.');const recipient=addr(recipientRaw);const tax=Number($('ponsTax').value||0);if(!Number.isFinite(tax)||tax<0)throw new Error('Creator tax cannot be negative.');const taxBps=Math.round(tax*100);if(taxBps>Number(p.maxTax))throw new Error(`Creator tax exceeds the live Pons maximum of ${Number(p.maxTax)/100}%.`);const configRaw=$('ponsConfig').value;if(configRaw==='')throw new Error('No enabled Pons launch option is selected.');const configId=BigInt(configRaw);if(!p.configs.some(x=>x.id===configId))throw new Error('That Pons launch option is no longer enabled. Refresh and choose an enabled config.');const quoteIn=parseAmount($('ponsDevBuy').value||'0',pair.decimals,'Creator buy');const minText=$('ponsMinOut').value.trim()||'0';if(!/^\d+$/.test(minText))throw new Error('Minimum tokens out must be an integer in raw token units.');const minOut=BigInt(minText);if(quoteIn===0n&&minOut>0n)throw new Error('Minimum tokens out only applies when the developer buy is above zero.');const exemptions=ponsExemptions();const fRead=new E.Contract(C.ponsV2.factory,PONS_READ,state.publicProvider);const economics=await fRead.previewLaunchEconomics(configId,pair.address);const params=ponsParams({name,symbol,logo,description},{twitter:$('ponsTwitter').value.trim(),telegram:$('ponsTelegram').value.trim(),discord:$('ponsDiscord').value.trim(),website:$('ponsWebsite').value.trim(),farcaster:$('ponsFarcaster').value.trim()},recipient,taxBps,$('ponsBuyback').checked,economics);
+    const btn=$('ponsButton');clearMessage('ponsMessage');try{busy(btn,true,'Checking launch details...');const p=await requirePonsLaunch();const name=$('ponsName').value.trim(),symbol=$('ponsSymbol').value.trim().toUpperCase(),description=$('ponsDescription').value.trim();if(!name||name.length>64)throw new Error('Token name must be 1 to 64 characters.');if(!/^[A-Z0-9]{2,11}$/.test(symbol))throw new Error('Symbol must be 2 to 11 uppercase letters or numbers.');busy(btn,true,'Uploading token image...');const logo=await uploadPonsLogo();const pair=await ponsPair();const recipientRaw=$('ponsRecipient').value.trim()||state.account;if(!isAddress(recipientRaw))throw new Error('Creator fee recipient is not a valid EVM address.');const recipient=addr(recipientRaw);const tax=Number($('ponsTax').value||0);if(!Number.isFinite(tax)||tax<0)throw new Error('Creator tax cannot be negative.');const taxBps=Math.round(tax*100);if(taxBps>Number(p.maxTax))throw new Error(`Creator tax exceeds the live Pons maximum of ${Number(p.maxTax)/100}%.`);const configRaw=$('ponsConfig').value;if(configRaw==='')throw new Error('No enabled Pons launch option is selected.');const configId=BigInt(configRaw);if(!p.configs.some(x=>x.id===configId))throw new Error('That Pons launch option is no longer enabled. Refresh and choose an enabled config.');const quoteIn=parseAmount($('ponsDevBuy').value||'0',pair.decimals,'Creator buy');const minText=$('ponsMinOut').value.trim()||'0';if(!/^\d+$/.test(minText))throw new Error('Minimum tokens out must be an integer in raw token units.');const minOut=BigInt(minText);if(quoteIn===0n&&minOut>0n)throw new Error('Minimum tokens out only applies when the developer buy is above zero.');const exemptions=ponsExemptions();const fRead=new E.Contract(C.ponsV2.factory,PONS_READ,state.publicProvider);const economics=await fRead.previewLaunchEconomics(configId,pair.address);const params=ponsParams({name,symbol,logo,description},{twitter:$('ponsTwitter').value.trim(),telegram:$('ponsTelegram').value.trim(),discord:$('ponsDiscord').value.trim(),website:$('ponsWebsite').value.trim(),farcaster:$('ponsFarcaster').value.trim()},recipient,taxBps,$('ponsBuyback').checked,economics);
       let prediction,tx;if(quoteIn>0n){if(!p.forwarder||p.forwarder===ZERO)throw new Error('Pons V2 does not currently expose a launch-and-buy forwarder.');if(pair.address!==ZERO){busy(btn,true,'Checking pair-token allowance…');const balance=BigInt(await pair.contract.balanceOf(state.account));if(balance<quoteIn)throw new Error(`Wallet holds ${fmtUnits(balance,pair.decimals)} ${pair.symbol}, below the creator buy amount.`);await approveExact(pair.address,p.forwarder,quoteIn,'ponsMessage','ponsButton')};const value=pair.address===ZERO?p.fee+quoteIn:p.fee;const forwarder=new E.Contract(p.forwarder,PONS_FORWARDER,state.signer);busy(btn,true,'Simulating launch + buy…');prediction=await forwarder.launchAndBuy.staticCall(params,configId,pair.address,quoteIn,minOut,state.account,exemptions,{value});message('ponsMessage','Atomic launch-and-buy simulation passed. Confirm the live transaction in your wallet.');busy(btn,true,'Confirm launch…');tx=await forwarder.launchAndBuy(params,configId,pair.address,quoteIn,minOut,state.account,exemptions,{value})}
       else if(exemptions.length){const factory=new E.Contract(C.ponsV2.factory,PONS_LAUNCH_EXEMPT,state.signer);busy(btn,true,'Simulating launch…');prediction=await factory.launchToken.staticCall(params,configId,pair.address,exemptions,{value:p.fee});message('ponsMessage','Direct Pons V2 launch simulation passed.');busy(btn,true,'Confirm launch…');tx=await factory.launchToken(params,configId,pair.address,exemptions,{value:p.fee})}
       else{const factory=new E.Contract(C.ponsV2.factory,PONS_LAUNCH,state.signer);busy(btn,true,'Simulating launch…');prediction=await factory.launchToken.staticCall(params,configId,pair.address,{value:p.fee});message('ponsMessage','Direct Pons V2 launch simulation passed.');busy(btn,true,'Confirm launch…');tx=await factory.launchToken(params,configId,pair.address,{value:p.fee})}
-      message('ponsMessage',`Launch submitted. Waiting for ${networkName()} confirmation… ${tx.hash}`);busy(btn,true,'Waiting for confirmation…');const receipt=await tx.wait();if(!receipt||receipt.status!==1)throw new Error('The launch transaction was mined but did not succeed.');const token=prediction[0],curve=prediction[1];message('ponsMessage',`Launch confirmed. Token: <code>${token}</code>. ${txLink(tx.hash)}`,'success',true);$('ponsResult').innerHTML=`<section class="result-card"><strong>${esc(name)} (${esc(symbol)}) is live</strong><code>Token ${token}</code><code>Curve ${curve}</code><a href="${explorer('address',token)}" target="_blank" rel="noopener noreferrer">Token on Blockscout ↗</a> &nbsp; <a href="${explorer('address',curve)}" target="_blank" rel="noopener noreferrer">Curve on Blockscout ↗</a> &nbsp; <a href="${C.ponsV2.publicSite}" target="_blank" rel="noopener noreferrer">Open Pons ↗</a></section>`;toast('Pons V2 launch confirmed.','success');await refreshLive()
+      message('ponsMessage',`Launch submitted. Waiting for ${networkName()} confirmation… ${tx.hash}`);busy(btn,true,'Waiting for confirmation…');const receipt=await tx.wait();if(!receipt||receipt.status!==1)throw new Error('The launch transaction was mined but did not succeed.');const token=prediction[0],curve=prediction[1];message('ponsMessage',`Launch confirmed. Token: <code>${token}</code>. ${txLink(tx.hash)}`,'success',true);$('ponsResult').innerHTML=`<section class="result-card"><strong>${esc(name)} (${esc(symbol)}) is live</strong><code>Token ${token}</code><code>Curve ${curve}</code><a href="${explorer('address',token)}" target="_blank" rel="noopener noreferrer">Token on Blockscout </a> &nbsp; <a href="${explorer('address',curve)}" target="_blank" rel="noopener noreferrer">Curve on Blockscout </a> &nbsp; <a href="${C.ponsV2.publicSite}" target="_blank" rel="noopener noreferrer">Open Pons </a></section>`;toast('Pons V2 launch confirmed.','success');await refreshLive()
     }catch(err){message('ponsMessage',errorText(err),'error')}finally{busy(btn,false);updatePonsView()}}
 
   function updatePonsView(){
@@ -469,8 +550,9 @@
     if($('multiAsset'))$('multiAsset').addEventListener('change',()=>{$('multiTokenWrap').hidden=$('multiAsset').value==='native'});
     if($('mintMode'))$('mintMode').addEventListener('change',()=>{$('mintRecipientWrap').hidden=$('mintMode').value==='self'});
     if($('ponsPair'))$('ponsPair').addEventListener('change',()=>{$('ponsCustomPairWrap').hidden=$('ponsPair').value!=='custom'});
-    if($('refreshPons'))$('refreshPons').addEventListener('click',async()=>{const b=$('refreshPons');busy(b,true,'Refreshing…');try{await refreshLive();toast('Live Pons terms refreshed.','success')}finally{busy(b,false)}});
-    prefillFromHash(id);
+    if($('ponsLogoFile'))$('ponsLogoFile').addEventListener('change',e=>{state.ponsLogoUri='';const file=e.target.files?.[0],preview=$('ponsLogoFilePreview');if(!preview)return;preview.innerHTML='';if(file){const img=document.createElement('img');img.alt='Token image preview';img.src=URL.createObjectURL(file);img.onload=()=>URL.revokeObjectURL(img.src);preview.appendChild(img)}else{preview.innerHTML='<span>PNG<br>JPG<br>WEBP</span>'}});
+    if($('refreshPons'))$('refreshPons').addEventListener('click',async()=>{const b=$('refreshPons');busy(b,true,'Refreshing');try{await refreshLive();toast('Live Pons terms refreshed.','success')}finally{busy(b,false)}});
+    prefillFromHash(id);window.NockraI18n?.apply($('toolView'));
   }
 
   function setMeta(title,description){
@@ -497,8 +579,8 @@
     const fp=$('footerPons');if(fp)fp.href=C.ponsV2.publicSite;
   }
   function copyButton(ca){ return ca ? `<button type="button" class="copy-button" data-copy-ca="${ca}">Copy CA</button>` : ''; }
-  function buyButton(label='Buy'){ const u=getBuyUrl(); return u ? `<a class="button primary" href="${u}" target="_blank" rel="noopener noreferrer">${label} <span>↗</span></a>` : ''; }
-  function xButton(label='X'){ const u=xUrl(); return u ? `<a class="button ghost" href="${u}" target="_blank" rel="noopener noreferrer">${label} <span>↗</span></a>` : ''; }
+  function buyButton(label='Buy'){ const u=getBuyUrl(); return u ? `<a class="button primary" href="${u}" target="_blank" rel="noopener noreferrer">${label}</a>` : ''; }
+  function xButton(label='X'){ const u=xUrl(); return u ? `<a class="button ghost" href="${u}" target="_blank" rel="noopener noreferrer">${label}</a>` : ''; }
   function coinInfoRows(){
     const ca=contractAddress();
     return `<div class="public-kv"><div><span>Project</span><strong>${esc(coinName())}</strong></div><div><span>Ticker</span><strong>${esc(ticker())}</strong></div><div><span>Network</span><strong>${esc(networkName())}</strong></div>${ca?`<div><span>Contract</span><div class="ca-line"><code>${ca}</code>${copyButton(ca)}</div></div>`:''}</div>`;
@@ -506,7 +588,7 @@
   function renderTickerPage(){
     const ca=contractAddress(),buy=getBuyUrl(),x=xUrl();
     setMeta(`${ticker()} | ${coinName()}`,`${coinName()} on ${networkName()}. Project information, links and purchase access.`);
-    $('publicPageContent').innerHTML=`<section class="public-hero"><div><span class="eyebrow lime">${esc(networkName())} / ${esc(ticker())}</span><h1>${esc(coinName())}<br><span style="color:var(--lime)">${esc(ticker())}</span></h1><p>${esc(C.description||`${coinName()} is built for ${networkName()}.`)}</p><div class="public-actions">${buyButton('Buy')}${xButton('Open X')}<a class="button ghost" href="/docs">Read docs <span>↗</span></a></div></div><div class="project-mark-panel"><img src="/assets/nockra-mark.png" alt="${esc(coinName())} logo" /></div></section><section class="public-section"><div class="public-section-grid"><div><span class="eyebrow">PROJECT INFORMATION</span><h2>One clear source.</h2></div><div>${coinInfoRows()}</div></div></section><section class="public-section"><div class="public-section-grid"><div><span class="eyebrow">HOW TO BUY</span><h2>Use the Pons Family launchpad.</h2></div><div><p>${buy?'Open the official Pons Family launchpad from the Buy action, connect a compatible wallet, confirm the token contract shown there and review the transaction before signing.':'Purchase access appears automatically when a valid project contract is available.'}</p>${buy?`<div class="public-actions">${buyButton('Open launchpad')}</div>`:''}</div></div></section><section class="public-section"><div class="public-section-grid"><div><span class="eyebrow">IMPORTANT LINKS</span><h2>Project access.</h2></div><div class="public-kv"><div><span>Docs</span><strong><a class="text-link" href="/docs">Project documentation ↗</a></strong></div>${x?`<div><span>Community</span><strong><a class="text-link" href="${x}" target="_blank" rel="noopener noreferrer">X profile ↗</a></strong></div>`:''}${ca&&isAddress(ca)?`<div><span>Explorer</span><strong><a class="text-link" href="${explorer('address',addr(ca))}" target="_blank" rel="noopener noreferrer">View contract ↗</a></strong></div>`:''}</div></div></section>`;
+    $('publicPageContent').innerHTML=`<section class="public-hero"><div><span class="eyebrow lime">${esc(networkName())} / ${esc(ticker())}</span><h1>${esc(coinName())}<br><span style="color:var(--lime)">${esc(ticker())}</span></h1><p>${esc(C.description||`${coinName()} is built for ${networkName()}.`)}</p><div class="public-actions">${buyButton('Buy')}${xButton('Open X')}<a class="button ghost" href="/docs">Read docs</a></div></div><div class="project-mark-panel"><img src="/assets/nockra-mark.png" alt="${esc(coinName())} logo" /></div></section><section class="public-section"><div class="public-section-grid"><div><span class="eyebrow">PROJECT INFORMATION</span><h2>One clear source.</h2></div><div>${coinInfoRows()}</div></div></section><section class="public-section"><div class="public-section-grid"><div><span class="eyebrow">HOW TO BUY</span><h2>Use the Pons Family launchpad.</h2></div><div><p>${buy?'Open the official Pons Family launchpad from the Buy action, connect a compatible wallet, confirm the token contract shown there and review the transaction before signing.':'Purchase access appears automatically when a valid project contract is available.'}</p>${buy?`<div class="public-actions">${buyButton('Open launchpad')}</div>`:''}</div></div></section><section class="public-section"><div class="public-section-grid"><div><span class="eyebrow">IMPORTANT LINKS</span><h2>Project access.</h2></div><div class="public-kv"><div><span>Docs</span><strong><a class="text-link" href="/docs">Project documentation </a></strong></div>${x?`<div><span>Community</span><strong><a class="text-link" href="${x}" target="_blank" rel="noopener noreferrer">X profile </a></strong></div>`:''}${ca&&isAddress(ca)?`<div><span>Explorer</span><strong><a class="text-link" href="${explorer('address',addr(ca))}" target="_blank" rel="noopener noreferrer">View contract </a></strong></div>`:''}</div></div></section>`;
   }
   function renderDocs(){
     const buy=getBuyUrl(),x=xUrl(),ca=contractAddress();
@@ -546,7 +628,7 @@
   }
   function render404(){
     setMeta(`Page not found | ${coinName()}`,`The requested page could not be found.`);
-    $('publicPageContent').innerHTML=`<section class="not-found"><span class="code404">404</span><h1>Not here.</h1><p>The page you requested could not be found.</p><div class="public-actions"><a class="button primary" href="/">Return home <span>↗</span></a></div></section>`;
+    $('publicPageContent').innerHTML=`<section class="not-found"><span class="code404">404</span><h1>Not here.</h1><p>The page you requested could not be found.</p><div class="public-actions"><a class="button primary" href="/">Return home</a></div></section>`;
   }
   async function copyConfiguredAddress(button){
     const ca=contractAddress();if(!ca)return;
@@ -568,7 +650,7 @@
     $('siteFooter').hidden=inTool;
     $('toolsMenu').hidden=true;$('toolsToggle').setAttribute('aria-expanded','false');
     if(inTool){renderTool(toolMatch[1]);window.scrollTo({top:0,behavior:'instant'});return}
-    if(publicKind){if(publicKind==='ticker')renderTickerPage();else if(publicKind==='docs')renderDocs();else if(publicKind==='404')render404();else renderLegal(publicKind);window.scrollTo({top:0,behavior:'instant'});return}
+    if(publicKind){if(publicKind==='ticker')renderTickerPage();else if(publicKind==='docs')renderDocs();else if(publicKind==='404')render404();else renderLegal(publicKind);window.NockraI18n?.apply($('publicPageContent'));window.scrollTo({top:0,behavior:'instant'});return}
     setMeta(`${coinName()} | ${networkName()} Token Tools`,`${coinName()} provides token creation, Pons V2 launching and management tools for ${networkName()}.`);
     const target=hash.replace(/^#/,'').split('?')[0];if(target&&target!=='home')setTimeout(()=>document.getElementById(target)?.scrollIntoView({behavior:'smooth'}),30);
   }
@@ -584,20 +666,46 @@
     if(actions[a])await actions[a]();
   }
 
+  function applyTheme(theme){
+    const value=theme==='light'?'light':'dark';document.documentElement.dataset.theme=value;localStorage.setItem('nockra:theme',value);const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',value==='light'?'#f4f6ef':'#080b09');
+  }
+  function toggleTheme(){applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light')}
+  async function onWalletButton(){
+    if(state.account){$('walletMenu').hidden=!$('walletMenu').hidden;return}
+    try{await connectWallet();toast(`Wallet connected to ${networkName()}.`,'success');const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])}catch(err){toast(errorText(err),'error')}
+  }
   function setupEvents(){
-    $('connectWallet').addEventListener('click',async()=>{try{await connectWallet();toast(`Wallet connected to ${networkName()}.`,'success');const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])}catch(err){toast(errorText(err),'error')}});
-    $('sidebarWallet').addEventListener('click',async()=>{try{await connectWallet();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])}catch(err){toast(errorText(err),'error')}});
-    $('toolsToggle').addEventListener('click',()=>{const open=$('toolsMenu').hidden;$('toolsMenu').hidden=!open;$('toolsToggle').setAttribute('aria-expanded',String(open))});
-    document.addEventListener('click',e=>{if(!$('toolsMenu').hidden&&!e.target.closest('#toolsMenu')&&!e.target.closest('#toolsToggle')){$('toolsMenu').hidden=true;$('toolsToggle').setAttribute('aria-expanded','false')}const routeBtn=e.target.closest('[data-route-tool]');if(routeBtn)location.hash=`#tool/${routeBtn.dataset.routeTool}`;const filter=e.target.closest('[data-filter]');if(filter){state.activeFilter=filter.dataset.filter;document.querySelectorAll('[data-filter]').forEach(n=>n.classList.toggle('active',n===filter));renderToolGrid()}const copy=e.target.closest('[data-copy-ca]');if(copy){e.preventDefault();copyConfiguredAddress(copy)}});
-    $('toolSearch').addEventListener('input',renderToolGrid);$('workspaceBack').addEventListener('click',()=>{location.hash='#tools'});$('homeCopyCa')?.addEventListener('click',e=>copyConfiguredAddress(e.currentTarget));document.addEventListener('submit',handleSubmit);
+    $('connectWallet').addEventListener('click',onWalletButton);
+    $('sidebarWallet').addEventListener('click',async()=>{if(state.account){$('walletMenu').hidden=!$('walletMenu').hidden;return}try{await connectWallet();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])}catch(err){toast(errorText(err),'error')}});
+    $('disconnectWallet')?.addEventListener('click',()=>{disconnectWallet();toast('Wallet disconnected from Nockra.','success')});
+    $('walletCopy')?.addEventListener('click',async()=>{if(!state.account)return;try{await navigator.clipboard.writeText(state.account);toast('Address copied.','success')}catch{}});
+    $('languageToggle')?.addEventListener('click',()=>window.NockraI18n?.toggle());
+    $('mobileLanguageToggle')?.addEventListener('click',()=>window.NockraI18n?.toggle());
+    $('themeToggle')?.addEventListener('click',toggleTheme);$('mobileThemeToggle')?.addEventListener('click',toggleTheme);
+    document.addEventListener('nockra:language',updateWalletUI);
+    $('toolsToggle').addEventListener('click',()=>{const open=$('toolsMenu').hidden;$('toolsMenu').hidden=!open;$('toolsToggle').setAttribute('aria-expanded',String(open));if(open)$('menuToolSearch')?.focus()});
+    $('menuToolSearch')?.addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('#toolsMenuGroups .mega-group a').forEach(a=>a.hidden=Boolean(q)&&!a.textContent.toLowerCase().includes(q));document.querySelectorAll('#toolsMenuGroups .mega-group').forEach(g=>g.hidden=!Array.from(g.querySelectorAll('a')).some(a=>!a.hidden))});
+    document.addEventListener('click',e=>{
+      if(!$('toolsMenu').hidden&&!e.target.closest('#toolsMenu')&&!e.target.closest('#toolsToggle')){$('toolsMenu').hidden=true;$('toolsToggle').setAttribute('aria-expanded','false')}
+      if(!$('walletMenu').hidden&&!e.target.closest('.wallet-wrap')&&!e.target.closest('#sidebarWallet'))$('walletMenu').hidden=true;
+      const routeBtn=e.target.closest('[data-route-tool]');if(routeBtn)location.href=`/#tool/${routeBtn.dataset.routeTool}`;
+      const filter=e.target.closest('[data-filter]');if(filter){state.activeFilter=filter.dataset.filter;document.querySelectorAll('[data-filter]').forEach(n=>n.classList.toggle('active',n===filter));renderToolGrid();window.NockraI18n?.apply($('toolGrid'))}
+      const copy=e.target.closest('[data-copy-ca]');if(copy){e.preventDefault();copyConfiguredAddress(copy)}
+    });
+    $('toolSearch').addEventListener('input',()=>{renderToolGrid();window.NockraI18n?.apply($('toolGrid'))});
+    $('workspaceBack').addEventListener('click',()=>{location.href='/#tools'});$('homeCopyCa')?.addEventListener('click',e=>copyConfiguredAddress(e.currentTarget));document.addEventListener('submit',handleSubmit);
     $('mobileMenuButton').addEventListener('click',()=>{$('mobilePanel').hidden=false;$('mobileMenuButton').setAttribute('aria-expanded','true')});$('closeMobile').addEventListener('click',()=>{$('mobilePanel').hidden=true;$('mobileMenuButton').setAttribute('aria-expanded','false')});$('mobilePanel').addEventListener('click',e=>{if(e.target.closest('a'))$('mobilePanel').hidden=true});
     window.addEventListener('hashchange',route);window.addEventListener('popstate',route);
-    if(window.ethereum){window.ethereum.on?.('accountsChanged',async accounts=>{state.account=accounts?.[0]?E.getAddress(accounts[0]):null;state.signer=null;state.browserProvider=null;if(state.account){try{state.browserProvider=new E.BrowserProvider(window.ethereum);state.signer=await state.browserProvider.getSigner()}catch{}}updateWalletUI();await refreshLive();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])});window.ethereum.on?.('chainChanged',async()=>{state.signer=null;state.browserProvider=null;state.account=null;updateWalletUI();await refreshLive()})}
+    if(window.ethereum){
+      window.ethereum.on?.('accountsChanged',async accounts=>{if(localStorage.getItem('nockra:wallet-disconnected')==='1'){state.account=null;state.signer=null;state.browserProvider=null;updateWalletUI();return}state.account=accounts?.[0]?E.getAddress(accounts[0]):null;state.signer=null;state.browserProvider=null;if(state.account){try{state.browserProvider=new E.BrowserProvider(window.ethereum,'any');state.signer=await state.browserProvider.getSigner()}catch{}}updateWalletUI();await refreshLive();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])});
+      window.ethereum.on?.('chainChanged',async()=>{if(!state.account)return;state.signer=null;state.browserProvider=null;try{state.browserProvider=new E.BrowserProvider(window.ethereum,'any');state.signer=await state.browserProvider.getSigner();state.chainOk=String(await window.ethereum.request({method:'eth_chainId'})).toLowerCase()===String(C.chain.hexId).toLowerCase()}catch{state.chainOk=false}updateWalletUI();await refreshLive()})
+    }
   }
 
   async function boot(){
+    applyTheme(localStorage.getItem('nockra:theme')||'dark');
     hydratePublicConfig();
-    renderToolNavigation();renderContracts();setupEvents();updateWalletUI();route();await initPublic();
+    renderToolNavigation();renderContracts();setupEvents();await restoreWalletSession();updateWalletUI();route();window.NockraI18n?.apply(document);await initPublic();
   }
   boot();
 })();

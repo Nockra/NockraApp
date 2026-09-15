@@ -1,28 +1,55 @@
 # Nockra final pack
 
-Production-oriented static application for Robinhood Chain token tooling and Pons V2 launching.
+Production-oriented Robinhood Chain token-tooling interface with the Pons V2 launch flow.
 
-## Public configuration
-Edit only `config.json` for public project values such as coin name, ticker, network label, contract address, X URL and Pons Family buy URL template. No private keys or secrets belong in this file.
+## Public project values
+Public brand/project values live in `config.json`: coin name, ticker, network label, contract address, X URL and the Pons Family buy URL template. The Buy destination is generated from `buyUrlTemplate` by replacing `{ca}` with `contractAddress`.
 
-The buy URL is generated from `buyUrlTemplate` by replacing `{ca}` with `contractAddress`. Invalid or missing public values are omitted from the public UI without setup or developer notices.
+Do not put private keys, seed phrases, wallet credentials or API secrets in `config.json`.
 
 ## Routes
 - `/`
-- `/{ticker in lowercase}` via the SPA rewrite, e.g. `/nockra`
+- `/{ticker in lowercase}`, for example `/nockra`
 - `/docs`
 - `/privacy`
 - `/terms`
 - `/disclaimer`
 - `/cookies`
-- custom 404 for all other routes
-- tool workspace via `/#tool/<tool-id>`
+- branded 404 page
+- tool workspaces at `/#tool/<tool-id>`
+
+The pack includes both SPA rewrites and physical fallback route folders for the default ticker and public pages. This prevents direct-page refreshes such as `/nockra` or `/docs` from falling through to a hosting-provider 404.
+
+## Wallet connection
+The header wallet button requests wallet access when disconnected. Once connected, clicking the same button opens a wallet menu containing Copy address, View on explorer and Disconnect. Disconnect clears the Nockra browser session. Wallet-extension site permissions remain under the wallet extension's own controls.
+
+Robinhood Chain parameters are included in `config.json`, so compatible injected wallets can switch to or add the network when required.
+
+## Pons V2 token image upload
+The Pons V2 form uses a real local image chooser rather than asking visitors for a logo URI. PNG, JPEG and WebP are accepted. The browser optimizes oversized raster images before upload and the resulting IPFS URI is passed to the Pons V2 launch transaction.
+
+The included Vercel serverless endpoint is `api/upload.js`. For production image uploads, add a server-side environment secret named `PINATA_JWT` to the deployment. The secret is never sent to the browser and must not be added to `config.json`.
+
+If you use another image-storage provider, replace the server implementation while preserving the `{ ok: true, uri: "ipfs://..." }` response shape expected by the front end.
+
+## Themes and language
+The interface includes dark and light themes and English/Chinese switching. Preferences are stored in browser local storage. Poppins is the only UI font family requested by the stylesheet.
 
 ## Hosting
-`vercel.json` is included for Vercel. `_redirects` is included for Netlify-compatible static hosting. Any other host must rewrite application routes to `/index.html` while serving static assets normally.
+- Vercel: deploy this folder as the project root. `vercel.json` is included.
+- Netlify-compatible hosts: `_redirects` is included.
+- Traditional static hosting: upload the complete folder. Physical route fallback folders are included for the shipped default routes.
+
+The ZIP is packaged with `index.html`, `vercel.json`, assets and source files at the archive root. Do not deploy an extra parent directory above them.
 
 ## Local review
-Run a local static server from this folder, for example `python -m http.server 8080`, then open `http://localhost:8080/`.
+From the project root:
 
-## Wallet actions
-All writes require an injected EVM wallet, the Robinhood Chain network, live RPC access and user approval. Test with a suitable wallet and funds before production release.
+```bash
+python -m http.server 8080
+```
+
+Then open `http://localhost:8080/`. Physical public routes can also be reviewed locally with a trailing slash, such as `http://localhost:8080/nockra/`.
+
+## Transaction testing
+All blockchain writes require a compatible injected EVM wallet, Robinhood Chain RPC access, sufficient gas funds, the relevant token permissions and user approval. Mainnet transactions should be tested with the deployment wallet before public release.
