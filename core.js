@@ -65,7 +65,7 @@
   function applyPublicConfig(){
     const c = state.config;
     document.querySelectorAll('[data-config="coinName"]').forEach(el => el.textContent = c.coinName || 'Nockra');
-    document.querySelectorAll('[data-config="ticker"]').forEach(el => el.textContent = c.ticker || 'NOCKRA');
+    document.querySelectorAll('[data-config="ticker"]').forEach(el => { const raw=String(c.ticker||'NOCKRA').replace(/^\$/,''); el.textContent = '$' + raw; });
     document.querySelectorAll('[data-config="network"]').forEach(el => el.textContent = c.network || 'Robinhood Chain');
     document.querySelectorAll('[data-ticker-link]').forEach(el => el.setAttribute('href', tickerPath()));
     const x = validUrl(c.xUrl) ? c.xUrl : '';

@@ -42,3 +42,8 @@ The included UI smoke test intentionally tests menus, theme, language, wallet co
 ## Transaction testing
 
 The interface uses real wallet and contract transaction paths. Mainnet deployment, token launch and liquidity writes are not automatically broadcast by the included tests because doing so would spend real funds and require an authorized wallet signature.
+
+
+## Route and favicon fix
+
+This build includes physical route folders for every tool and for `/nockra`, so tool and ticker pages work even on hosts that do not honor rewrite rules. Every page uses the Nockra mark as its favicon. The ticker page is `/nockra` and displays `$NOCKRA`.

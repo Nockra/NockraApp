@@ -2,19 +2,158 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/tools", "destination": "/tools.html" },
-    { "source": "/tools/:tool", "destination": "/tool.html" },
-    { "source": "/docs", "destination": "/docs.html" },
-    { "source": "/privacy", "destination": "/privacy.html" },
-    { "source": "/terms", "destination": "/terms.html" },
-    { "source": "/disclaimer", "destination": "/disclaimer.html" },
-    { "source": "/cookies", "destination": "/cookies.html" },
-    { "source": "/:ticker", "destination": "/coin.html" }
+    {
+      "source": "/tools",
+      "destination": "/tools/index.html"
+    },
+    {
+      "source": "/tools/token-creator",
+      "destination": "/tools/token-creator/index.html"
+    },
+    {
+      "source": "/tools/pons-v2",
+      "destination": "/tools/pons-v2/index.html"
+    },
+    {
+      "source": "/tools/multisender",
+      "destination": "/tools/multisender/index.html"
+    },
+    {
+      "source": "/tools/revoke",
+      "destination": "/tools/revoke/index.html"
+    },
+    {
+      "source": "/tools/mint",
+      "destination": "/tools/mint/index.html"
+    },
+    {
+      "source": "/tools/burn",
+      "destination": "/tools/burn/index.html"
+    },
+    {
+      "source": "/tools/create-pool",
+      "destination": "/tools/create-pool/index.html"
+    },
+    {
+      "source": "/tools/add-liquidity",
+      "destination": "/tools/add-liquidity/index.html"
+    },
+    {
+      "source": "/tools/remove-liquidity",
+      "destination": "/tools/remove-liquidity/index.html"
+    },
+    {
+      "source": "/tools/pause",
+      "destination": "/tools/pause/index.html"
+    },
+    {
+      "source": "/tools/unpause",
+      "destination": "/tools/unpause/index.html"
+    },
+    {
+      "source": "/tools/block",
+      "destination": "/tools/block/index.html"
+    },
+    {
+      "source": "/tools/unblock",
+      "destination": "/tools/unblock/index.html"
+    },
+    {
+      "source": "/tools/token-page",
+      "destination": "/tools/token-page/index.html"
+    },
+    {
+      "source": "/docs",
+      "destination": "/docs/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy/index.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms/index.html"
+    },
+    {
+      "source": "/disclaimer",
+      "destination": "/disclaimer/index.html"
+    },
+    {
+      "source": "/cookies",
+      "destination": "/cookies/index.html"
+    },
+    {
+      "source": "/nockra",
+      "destination": "/nockra/index.html"
+    },
+    {
+      "source": "/:ticker",
+      "destination": "/coin.html"
+    }
   ],
   "headers": [
-    { "source": "/core.js", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
-    { "source": "/tool.js", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
-    { "source": "/styles.css", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
-    { "source": "/config.json", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }
+    {
+      "source": "/core.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/coin.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/tool.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/styles.css",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/config.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/assets/favicon.png",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/assets/favicon.ico",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    }
   ]
 }
