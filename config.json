@@ -2,7 +2,7 @@
   "coinName": "Nockra",
   "ticker": "NOCKRA",
   "network": "Solana",
-  "contractAddress": "GLzhhraQoukfvDD3XXcZEk2C1YdwbSBG47vqobrnpump",
+  "contractAddress": "",
   "xUrl": "https://x.com/NockraApp",
   "buyUrlTemplate": "https://pump.fun/coin/{ca}",
   "description": "A focused token creation, launch and management workspace for Solana.",
