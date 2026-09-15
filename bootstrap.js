@@ -3,7 +3,7 @@
 
   const defaults = {
     coinName: '', ticker: '', network: '', contractAddress: '', xUrl: '', buyUrlTemplate: '', description: '', imageUploadEndpoint: '/api/upload',
-    chain: { id: 4663, hexId: '0x1237', name: 'Robinhood Chain', nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrl: 'https://rpc.mainnet.chain.robinhood.com', explorerUrl: 'https://robinhoodchain.blockscout.com' },
+    chain: { id: 4663, hexId: '0x1237', name: 'Solana', nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrl: 'https://api.mainnet-beta.solana.com', explorerUrl: 'https://solscan.io' },
     ponsV2: { factory: '0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e', usdG: '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', publicSite: 'https://www.ponsfamily.com/launchpad' },
     uniswapV3: { factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', positionManager: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3', swapRouter: '0xCaf681a66D020601342297493863E78C959E5cb2', quoterV2: '0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7', weth: '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73' }
   };

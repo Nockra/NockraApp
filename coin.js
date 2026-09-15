@@ -26,11 +26,11 @@
     const ca=String(c.contractAddress||'').trim(),hasCa=Core.isAddress(ca),buy=Core.getBuyUrl(),x=Core.validUrl(c.xUrl)?c.xUrl:'';
     if($('coinName')) $('coinName').textContent=c.coinName||'Nockra';
     if($('coinTicker')) $('coinTicker').textContent=display;
-    if($('coinNetwork')) $('coinNetwork').textContent=c.network||'Robinhood Chain';
+    if($('coinNetwork')) $('coinNetwork').textContent=c.network||'Solana';
     if($('coinDescription')) $('coinDescription').textContent=c.description||'';
     const caWrap=$('coinCaWrap');
     if(caWrap){
-      if(hasCa){caWrap.hidden=false;$('coinCa').textContent=ca;$('coinExplorer').href=Core.explorer('address',ca)}
+      if(hasCa){caWrap.hidden=false;$('coinCa').textContent=ca;$('coinExplorer').href=Core.explorer((String(c.network||'').toLowerCase()==='solana'?'token':'address'),ca)}
       else caWrap.hidden=true;
     }
     document.querySelectorAll('[data-coin-buy]').forEach(a=>{if(buy){a.hidden=false;a.href=buy}else{a.hidden=true;a.removeAttribute('href')}});

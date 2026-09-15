@@ -9,12 +9,12 @@
   function appUrl(path=''){ return new URL(String(path || '').replace(/^\/+/, ''), APP_BASE_URL).href; }
 
   const DEFAULT_CONFIG = Object.freeze({
-    coinName: 'Nockra', ticker: 'NOCKRA', network: 'Robinhood Chain', contractAddress: '', xUrl: '',
-    buyUrlTemplate: 'https://ponsfamily.com/launchpad/{ca}',
-    description: 'A focused token creation, launch and management workspace for Robinhood Chain.',
-    chain: { id: 4663, hexId: '0x1237', name: 'Robinhood Chain', rpcUrl: 'https://rpc.mainnet.chain.robinhood.com', explorerUrl: 'https://robinhoodchain.blockscout.com', nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 } },
-    ponsV2: { factory: '0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e', usdG: '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', publicSite: 'https://ponsfamily.com/launchpad' },
-    uniswapV3: { factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', positionManager: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3', swapRouter: '0xCaf681a66D020601342297493863E78C959E5cb2', quoterV2: '0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7', weth: '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73' },
+    coinName: 'Nockra', ticker: 'NOCKRA', network: 'Solana', contractAddress: '', xUrl: '',
+    buyUrlTemplate: 'https://pump.fun/coin/{ca}',
+    description: 'A focused token creation, launch and management workspace for Solana.',
+    chain: { id: 'solana-mainnet', hexId: 'solana-mainnet', name: 'Solana', rpcUrl: 'https://api.mainnet-beta.solana.com', explorerUrl: 'https://solscan.io', nativeCurrency: { name: 'Solana', symbol: 'SOL', decimals: 9 } },
+    ponsV2: { },
+    uniswapV3: { },
     imageUploadEndpoint: 'api/upload'
   });
 
@@ -29,17 +29,17 @@
     for (const [k,v] of Object.entries(extra)) out[k] = v && typeof v === 'object' && !Array.isArray(v) && base?.[k] && typeof base[k] === 'object' ? merge(base[k],v) : v;
     return out;
   }
-  function isAddress(v){ return /^0x[a-fA-F0-9]{40}$/.test(String(v || '').trim()); }
+  function isAddress(v){ const s=String(v || '').trim(); return /^0x[a-fA-F0-9]{40}$/.test(s) || /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(s); }
   function validUrl(v){ try { const u = new URL(String(v || '')); return u.protocol === 'https:'; } catch { return false; } }
   function configValue(k){ return state.config?.[k]; }
   function getBuyUrl(){
     const ca = String(configValue('contractAddress') || '').trim();
     const template = String(configValue('buyUrlTemplate') || '').trim();
     if (!isAddress(ca) || !/^https:\/\//i.test(template) || !template.includes('{ca}')) return '';
-    return template.replaceAll('{ca}', ca);
+    return template.replaceAll('{ca}', encodeURIComponent(ca));
   }
   function tickerPath(){ const t = String(configValue('ticker') || '').replace(/^\$/,'').trim().toLowerCase(); return /^[a-z0-9_-]{1,30}$/.test(t) ? appUrl(`${t}/`) : appUrl(''); }
-  function explorer(type, value){ const base = String(state.config.chain?.explorerUrl || '').replace(/\/$/,''); return `${base}/${type}/${value}`; }
+  function explorer(type, value){ const base = String(state.config.chain?.explorerUrl || '').replace(/\/$/,''); const v=encodeURIComponent(String(value||'')); if((state.config.network||'').toLowerCase()==='solana'){ if(type==='token') return `${base}/token/${v}`; return `${base}/account/${v}`; } return `${base}/${type}/${v}`; }
   function emit(){ listeners.forEach(fn => { try { fn(state); } catch {} }); }
   function onChange(fn){ listeners.add(fn); return () => listeners.delete(fn); }
 
@@ -73,7 +73,7 @@
     const c = state.config;
     document.querySelectorAll('[data-config="coinName"]').forEach(el => el.textContent = c.coinName || 'Nockra');
     document.querySelectorAll('[data-config="ticker"]').forEach(el => { const raw=String(c.ticker||'NOCKRA').replace(/^\$/,''); el.textContent = '$' + raw; });
-    document.querySelectorAll('[data-config="network"]').forEach(el => el.textContent = c.network || 'Robinhood Chain');
+    document.querySelectorAll('[data-config="network"]').forEach(el => el.textContent = c.network || 'Solana');
     document.querySelectorAll('[data-ticker-link]').forEach(el => el.setAttribute('href', tickerPath()));
     const x = validUrl(c.xUrl) ? c.xUrl : '';
     document.querySelectorAll('[data-x-link]').forEach(el => { if (x) { el.hidden = false; el.setAttribute('href', x); } else el.hidden = true; });
@@ -100,7 +100,7 @@
       try {
         await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{
           chainId: target,
-          chainName: state.config.chain?.name || state.config.network || 'Robinhood Chain',
+          chainName: state.config.chain?.name || state.config.network || 'Solana',
           nativeCurrency: state.config.chain?.nativeCurrency || { name: 'Ether', symbol: 'ETH', decimals: 18 },
           rpcUrls: [state.config.chain?.rpcUrl].filter(Boolean),
           blockExplorerUrls: [state.config.chain?.explorerUrl].filter(Boolean)
@@ -111,6 +111,17 @@
     return current === target;
   }
   async function connectWallet(){
+    if (window.solana?.isPhantom || window.solana?.connect) {
+      try {
+        const res = await window.solana.connect();
+        const key = res?.publicKey?.toString?.() || window.solana.publicKey?.toString?.() || '';
+        if (!key) return { ok: false, reason: 'account' };
+        state.account = key;
+        safeSet('nockra:walletConnected', '1');
+        updateWalletUI(); emit();
+        return { ok: true, account: state.account };
+      } catch { return { ok: false, reason: 'cancelled' }; }
+    }
     if (!window.ethereum?.request) return { ok: false, reason: 'wallet' };
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -123,14 +134,17 @@
       return { ok: true, account: state.account };
     } catch { return { ok: false, reason: 'cancelled' }; }
   }
-  function disconnectWallet(){ state.account = null; safeSet('nockra:walletConnected','0'); updateWalletUI(); emit(); }
+  async function disconnectWallet(){ try { await window.solana?.disconnect?.(); } catch {} state.account = null; safeSet('nockra:walletConnected','0'); updateWalletUI(); emit(); }
   async function restoreWallet(){
-    if (!window.ethereum?.request || safeGet('nockra:walletConnected') !== '1') return;
+    if (safeGet('nockra:walletConnected') !== '1') return;
+    if (window.solana?.isConnected && window.solana?.publicKey) { state.account = window.solana.publicKey.toString(); updateWalletUI(); emit(); return; }
+    if (window.solana?.connect) { try { const r = await window.solana.connect({ onlyIfTrusted: true }); const k=r?.publicKey?.toString?.() || window.solana.publicKey?.toString?.(); if(k){ state.account = k; updateWalletUI(); emit(); return; } } catch {} }
+    if (!window.ethereum?.request) return;
     try { const a = await window.ethereum.request({ method: 'eth_accounts' }); if (a?.[0]) { state.account = a[0]; updateWalletUI(); emit(); } } catch {}
   }
   function updateWalletUI(){
     document.querySelectorAll('[data-wallet-button]').forEach(btn => btn.textContent = state.account ? shortAddress(state.account) : (state.lang === 'zh' ? '连接钱包' : 'Connect Wallet'));
-    document.querySelectorAll('[data-wallet-connected-only]').forEach(el => el.hidden = !state.account); const ex=document.getElementById('walletExplorer'); if(ex && state.account) ex.href=explorer('address',state.account);
+    document.querySelectorAll('[data-wallet-connected-only]').forEach(el => el.hidden = !state.account); const ex=document.getElementById('walletExplorer'); if(ex && state.account) ex.href=explorer((state.config.network||'').toLowerCase()==='solana' ? 'account' : 'address', state.account);
   }
 
   function setupUI(){
@@ -143,7 +157,7 @@
       const wallet = e.target.closest('[data-wallet-button]');
       if (wallet) {
         e.preventDefault();
-        if (!state.account) { const r = await connectWallet(); if (!r.ok) toast(r.reason==='wallet' ? (state.lang==='zh'?'请在浏览器中打开兼容的钱包。':'Open a compatible browser wallet to connect.') : (state.lang==='zh'?'钱包连接未完成。':'Wallet connection was not completed.')); }
+        if (!state.account) { const r = await connectWallet(); if (!r.ok) toast(r.reason==='wallet' ? (state.lang==='zh'?'请在浏览器中打开兼容的钱包。':'Open Phantom, Solflare or a compatible browser wallet to connect.') : (state.lang==='zh'?'钱包连接未完成。':'Wallet connection was not completed.')); }
         else { const menu = document.querySelector('[data-wallet-menu]'); if (menu) menu.hidden = !menu.hidden; }
         return;
       }
