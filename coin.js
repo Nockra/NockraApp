@@ -17,7 +17,7 @@
     if(slug && ticker && slug!==ticker){
       document.title='Not Found | Nockra';
       const root=$('coinRoot');
-      if(root) root.innerHTML='<section class="not-found"><span class="eyebrow lime">404</span><h1>Not here.</h1><p class="muted">The page you requested could not be found.</p><div class="public-actions"><a class="primary-button" href="/">Return home</a></div></section>';
+      if(root) root.innerHTML=`<section class="not-found"><span class="eyebrow lime">404</span><h1>Not here.</h1><p class="muted">The page you requested could not be found.</p><div class="public-actions"><a class="primary-button" href="${Core.appUrl('')}">Return home</a></div></section>`;
       return;
     }
     const display='$'+tickerRaw;

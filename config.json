@@ -10,7 +10,11 @@
     "id": 4663,
     "hexId": "0x1237",
     "name": "Robinhood Chain",
-    "nativeCurrency": { "name": "Ether", "symbol": "ETH", "decimals": 18 },
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
     "rpcUrl": "https://rpc.mainnet.chain.robinhood.com",
     "explorerUrl": "https://robinhoodchain.blockscout.com"
   },
@@ -26,5 +30,5 @@
     "quoterV2": "0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7",
     "weth": "0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73"
   },
-  "imageUploadEndpoint": "/api/upload"
+  "imageUploadEndpoint": "api/upload"
 }

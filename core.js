@@ -1,6 +1,13 @@
 (() => {
   'use strict';
 
+  const CORE_SCRIPT = document.currentScript;
+  const APP_BASE_URL = (() => {
+    try { return new URL('./', CORE_SCRIPT && CORE_SCRIPT.src ? CORE_SCRIPT.src : location.href); }
+    catch { return new URL('./', location.href); }
+  })();
+  function appUrl(path=''){ return new URL(String(path || '').replace(/^\/+/, ''), APP_BASE_URL).href; }
+
   const DEFAULT_CONFIG = Object.freeze({
     coinName: 'Nockra', ticker: 'NOCKRA', network: 'Robinhood Chain', contractAddress: '', xUrl: '',
     buyUrlTemplate: 'https://ponsfamily.com/launchpad/{ca}',
@@ -8,7 +15,7 @@
     chain: { id: 4663, hexId: '0x1237', name: 'Robinhood Chain', rpcUrl: 'https://rpc.mainnet.chain.robinhood.com', explorerUrl: 'https://robinhoodchain.blockscout.com', nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 } },
     ponsV2: { factory: '0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e', usdG: '0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168', publicSite: 'https://ponsfamily.com/launchpad' },
     uniswapV3: { factory: '0x1f7d7550B1b028f7571E69A784071F0205FD2EfA', positionManager: '0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3', swapRouter: '0xCaf681a66D020601342297493863E78C959E5cb2', quoterV2: '0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7', weth: '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73' },
-    imageUploadEndpoint: '/api/upload'
+    imageUploadEndpoint: 'api/upload'
   });
 
   const state = { config: typeof structuredClone === 'function' ? structuredClone(DEFAULT_CONFIG) : JSON.parse(JSON.stringify(DEFAULT_CONFIG)), account: null, lang: safeGet('nockra:lang') || 'en', theme: safeGet('nockra:theme') || 'dark' };
@@ -31,7 +38,7 @@
     if (!isAddress(ca) || !/^https:\/\//i.test(template) || !template.includes('{ca}')) return '';
     return template.replaceAll('{ca}', ca);
   }
-  function tickerPath(){ const t = String(configValue('ticker') || '').trim().toLowerCase(); return /^[a-z0-9_-]{1,30}$/.test(t) ? `/${t}` : '/'; }
+  function tickerPath(){ const t = String(configValue('ticker') || '').replace(/^\$/,'').trim().toLowerCase(); return /^[a-z0-9_-]{1,30}$/.test(t) ? appUrl(`${t}/`) : appUrl(''); }
   function explorer(type, value){ const base = String(state.config.chain?.explorerUrl || '').replace(/\/$/,''); return `${base}/${type}/${value}`; }
   function emit(){ listeners.forEach(fn => { try { fn(state); } catch {} }); }
   function onChange(fn){ listeners.add(fn); return () => listeners.delete(fn); }
@@ -40,7 +47,7 @@
     const controller = 'AbortController' in window ? new AbortController() : null;
     const timeout = setTimeout(() => controller?.abort(), 1800);
     try {
-      const res = await fetch('/config.json', { cache: 'no-store', signal: controller?.signal });
+      const res = await fetch(appUrl('config.json'), { cache: 'no-store', signal: controller?.signal });
       if (!res.ok) return;
       const json = await res.json();
       if (json && typeof json === 'object') state.config = merge(DEFAULT_CONFIG, json);
@@ -157,6 +164,6 @@
     void loadConfig();
   }
 
-  window.NockraCore = { state, onChange, getBuyUrl, tickerPath, explorer, isAddress, validUrl, connectWallet, disconnectWallet, switchChain, shortAddress, applyPublicConfig };
+  window.NockraCore = { state, onChange, getBuyUrl, tickerPath, explorer, isAddress, validUrl, connectWallet, disconnectWallet, switchChain, shortAddress, applyPublicConfig, appUrl, appBase: APP_BASE_URL.href };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupUI, { once: true }); else setupUI();
 })();

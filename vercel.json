@@ -1,7 +1,9 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
+    {
+      "source": "/nockra",
+      "destination": "/nockra/index.html"
+    },
     {
       "source": "/tools",
       "destination": "/tools/index.html"
@@ -81,37 +83,11 @@
     {
       "source": "/cookies",
       "destination": "/cookies/index.html"
-    },
-    {
-      "source": "/nockra",
-      "destination": "/nockra/index.html"
-    },
-    {
-      "source": "/:ticker",
-      "destination": "/coin.html"
     }
   ],
   "headers": [
     {
-      "source": "/core.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/coin.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/tool.js",
+      "source": "/(.*).js",
       "headers": [
         {
           "key": "Cache-Control",
@@ -134,24 +110,6 @@
         {
           "key": "Cache-Control",
           "value": "no-store"
-        }
-      ]
-    },
-    {
-      "source": "/assets/favicon.png",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
-        }
-      ]
-    },
-    {
-      "source": "/assets/favicon.ico",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600"
         }
       ]
     }
