@@ -2,7 +2,7 @@
   "coinName": "Nockra",
   "ticker": "NOCKRA",
   "network": "Robinhood Chain",
-  "contractAddress": "",
+  "contractAddress": "0x4f669109209e15ddaE8b05308FB149c1B610537f",
   "xUrl": "https://x.com/NockraApp",
   "buyUrlTemplate": "https://ponsfamily.com/launchpad/{ca}",
   "description": "A focused token creation, launch and management workspace for Robinhood Chain.",
