@@ -8,18 +8,38 @@
     uniswapV3:{factory:'0x1f7d7550B1b028f7571E69A784071F0205FD2EfA',positionManager:'0x73991a25C818Bf1f1128dEAaB1492D45638DE0D3',swapRouter:'0xCaf681a66D020601342297493863E78C959E5cb2',quoterV2:'0x33e885eD0Ec9bF04EcfB19341582aADCb4c8A9E7',weth:'0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73'}
   };
   const mergeConfig=(a,b)=>({...a,...(b||{}),chain:{...a.chain,...(b?.chain||{}),nativeCurrency:{...a.chain.nativeCurrency,...(b?.chain?.nativeCurrency||{})}},ponsV2:{...a.ponsV2,...(b?.ponsV2||{})},uniswapV3:{...a.uniswapV3,...(b?.uniswapV3||{})}});
+  // Capture the directory that actually served app.js. This makes the app work at a
+  // domain root, inside a subdirectory, and from physical fallback pages.
+  const APP_BASE_URL=(()=>{try{return new URL('.',document.currentScript?.src||document.baseURI).href}catch{return './'}})();
+  const APP_BASE_PATH=(()=>{try{return new URL(APP_BASE_URL).pathname.replace(/\/+$/,'')||'/'}catch{return '/'}})();
+  const siteHref=(path='')=>{try{return new URL(String(path||'').replace(/^\/+/,''),APP_BASE_URL).href}catch{return path||'./'}};
+  function fixInternalUrls(root=document){
+    root.querySelectorAll?.('a[href^="/"]').forEach(a=>{const raw=a.getAttribute('href');if(!raw)return;a.href=siteHref(raw)});
+    root.querySelectorAll?.('img[src^="/assets/"]').forEach(img=>{const raw=img.getAttribute('src');if(raw)img.src=siteHref(raw)});
+  }
+  let C=mergeConfig(DEFAULT_CONFIG,window.NOCKRA_CONFIG||{});
+  window.NOCKRA_CONFIG=C;
   async function loadConfig(){
     const controller=typeof AbortController!=='undefined'?new AbortController():null;
-    const timer=setTimeout(()=>controller?.abort(),1200);
+    const timer=setTimeout(()=>controller?.abort(),1800);
     try{
-      const url=(location.protocol==='http:'||location.protocol==='https:')?'/config.json':'config.json';
+      const url=new URL('config.json',APP_BASE_URL).href;
       const r=await fetch(url,{cache:'no-store',signal:controller?.signal});
-      if(!r.ok)return DEFAULT_CONFIG;
-      return mergeConfig(DEFAULT_CONFIG,await r.json());
-    }catch{return DEFAULT_CONFIG}finally{clearTimeout(timer)}
+      if(!r.ok)return null;
+      const json=await r.json();
+      return json&&typeof json==='object'?json:null;
+    }catch{return null}finally{clearTimeout(timer)}
   }
-  const C = await loadConfig();
-  window.NOCKRA_CONFIG=C;
+  async function refreshConfig(){
+    const loaded=await loadConfig();
+    if(!loaded)return;
+    C=mergeConfig(DEFAULT_CONFIG,loaded);
+    window.NOCKRA_CONFIG=C;
+    try{hydratePublicConfig()}catch{}
+    try{renderContracts()}catch{}
+    try{route()}catch{}
+    try{updateWalletUI()}catch{}
+  }
   const storageGet=(k,f='')=>{try{return window.localStorage?.getItem(k)??f}catch{return f}};
   const storageSet=(k,v)=>{try{window.localStorage?.setItem(k,v)}catch{}};
   const storageRemove=k=>{try{window.localStorage?.removeItem(k)}catch{}};
@@ -648,6 +668,7 @@
     const ca=contractAddress();if($('homeCaWrap'))$('homeCaWrap').hidden=!ca;if(ca&&$('homeCa'))$('homeCa').textContent=ca;
     const exp=$('footerExplorer');if(exp)exp.href=C.chain.explorerUrl;
     const fp=$('footerPons');if(fp)fp.href=C.ponsV2.publicSite;
+    fixInternalUrls(document);
   }
   function copyButton(ca){ return ca ? `<button type="button" class="copy-button" data-copy-ca="${ca}">Copy CA</button>` : ''; }
   function buyButton(label='Buy'){ const u=getBuyUrl(); return u ? `<a class="button primary" href="${u}" target="_blank" rel="noopener noreferrer">${label}</a>` : ''; }
@@ -708,8 +729,11 @@
 
   function route(){
     hydratePublicConfig();
-    let path=(location.pathname||'/').replace(/\/+$/,'')||'/';
-    path=path.replace(/\.html$/i,'')||'/';
+    let path=(location.pathname||'/');
+    const base=APP_BASE_PATH==='/'?'':APP_BASE_PATH;
+    if(base&&path.startsWith(base))path=path.slice(base.length)||'/';
+    path=path.replace(/\/+$/,'')||'/';
+    path=path.replace(/\/index\.html$/i,'').replace(/\.html$/i,'')||'/';
     const hash=location.hash||'';
     const toolMatch=hash.match(/^#tool\/([^?]+)/);
     const isHome=path==='/';
@@ -721,8 +745,8 @@
     $('publicPage').hidden=!publicKind;
     $('siteFooter').hidden=inTool;
     $('toolsMenu').hidden=true;$('toolsToggle').setAttribute('aria-expanded','false');
-    if(inTool){renderTool(toolMatch[1]);window.scrollTo({top:0,behavior:'instant'});return}
-    if(publicKind){if(publicKind==='ticker')renderTickerPage();else if(publicKind==='docs')renderDocs();else if(publicKind==='404')render404();else renderLegal(publicKind);window.NockraI18n?.apply($('publicPageContent'));window.scrollTo({top:0,behavior:'instant'});return}
+    if(inTool){renderTool(toolMatch[1]);window.scrollTo({top:0,behavior:'auto'});return}
+    if(publicKind){if(publicKind==='ticker')renderTickerPage();else if(publicKind==='docs')renderDocs();else if(publicKind==='404')render404();else renderLegal(publicKind);fixInternalUrls($('publicPageContent'));window.NockraI18n?.apply($('publicPageContent'));window.scrollTo({top:0,behavior:'auto'});return}
     setMeta(`${coinName()} | ${networkName()} Token Tools`,`${coinName()} provides token creation, Pons V2 launching and management tools for ${networkName()}.`);
     const target=hash.replace(/^#/,'').split('?')[0];if(target&&target!=='home')setTimeout(()=>document.getElementById(target)?.scrollIntoView({behavior:'smooth'}),30);
   }
@@ -747,26 +771,33 @@
     try{await connectWallet();toast(`Wallet connected to ${networkName()}.`,'success');const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])}catch(err){toast(errorText(err),'error')}
   }
   function setupEvents(){
-    $('connectWallet').addEventListener('click',onWalletButton);
-    $('sidebarWallet').addEventListener('click',async()=>{if(state.account){$('walletMenu').hidden=!$('walletMenu').hidden;return}try{await connectWallet();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])}catch(err){toast(errorText(err),'error')}});
-    $('disconnectWallet')?.addEventListener('click',()=>{disconnectWallet();toast('Wallet disconnected from Nockra.','success')});
-    $('walletCopy')?.addEventListener('click',async()=>{if(!state.account)return;try{await navigator.clipboard.writeText(state.account);toast('Address copied.','success')}catch{}});
-    $('languageToggle')?.addEventListener('click',()=>window.NockraI18n?.toggle());
-    $('mobileLanguageToggle')?.addEventListener('click',()=>window.NockraI18n?.toggle());
-    $('themeToggle')?.addEventListener('click',toggleTheme);$('mobileThemeToggle')?.addEventListener('click',toggleTheme);
+    const on=(id,event,handler)=>{const el=$(id);if(el)el.addEventListener(event,handler)};
+    on('connectWallet','click',onWalletButton);
+    on('sidebarWallet','click',async()=>{if(state.account){const m=$('walletMenu');if(m)m.hidden=!m.hidden;return}try{await connectWallet();const match=(location.hash||'').match(/^#tool\/([^?]+)/);if(match)renderTool(match[1])}catch(err){toast(errorText(err),'error')}});
+    on('disconnectWallet','click',()=>{disconnectWallet();toast('Wallet disconnected from Nockra.','success')});
+    on('walletCopy','click',async()=>{if(!state.account)return;try{await navigator.clipboard.writeText(state.account);toast('Address copied.','success')}catch{}});
+    on('languageToggle','click',()=>window.NockraI18n?.toggle());
+    on('mobileLanguageToggle','click',()=>window.NockraI18n?.toggle());
+    on('themeToggle','click',toggleTheme);
+    on('mobileThemeToggle','click',toggleTheme);
     document.addEventListener('nockra:language',updateWalletUI);
-    $('toolsToggle').addEventListener('click',()=>{const open=$('toolsMenu').hidden;$('toolsMenu').hidden=!open;$('toolsToggle').setAttribute('aria-expanded',String(open));if(open)$('menuToolSearch')?.focus()});
-    $('menuToolSearch')?.addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('#toolsMenuGroups .mega-group a').forEach(a=>a.hidden=Boolean(q)&&!a.textContent.toLowerCase().includes(q));document.querySelectorAll('#toolsMenuGroups .mega-group').forEach(g=>g.hidden=!Array.from(g.querySelectorAll('a')).some(a=>!a.hidden))});
+    on('toolsToggle','click',()=>{const menu=$('toolsMenu'),toggle=$('toolsToggle');if(!menu||!toggle)return;const open=menu.hidden;menu.hidden=!open;toggle.setAttribute('aria-expanded',String(open));if(open)$('menuToolSearch')?.focus()});
+    on('menuToolSearch','input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('#toolsMenuGroups .mega-group a').forEach(a=>a.hidden=Boolean(q)&&!a.textContent.toLowerCase().includes(q));document.querySelectorAll('#toolsMenuGroups .mega-group').forEach(g=>g.hidden=!Array.from(g.querySelectorAll('a')).some(a=>!a.hidden))});
     document.addEventListener('click',e=>{
-      if(!$('toolsMenu').hidden&&!e.target.closest('#toolsMenu')&&!e.target.closest('#toolsToggle')){$('toolsMenu').hidden=true;$('toolsToggle').setAttribute('aria-expanded','false')}
-      if(!$('walletMenu').hidden&&!e.target.closest('.wallet-wrap')&&!e.target.closest('#sidebarWallet'))$('walletMenu').hidden=true;
+      const toolsMenu=$('toolsMenu'),toolsToggle=$('toolsToggle');
+      if(toolsMenu&&toolsToggle&&!toolsMenu.hidden&&!e.target.closest('#toolsMenu')&&!e.target.closest('#toolsToggle')){toolsMenu.hidden=true;toolsToggle.setAttribute('aria-expanded','false')}
+      const walletMenu=$('walletMenu');if(walletMenu&&!walletMenu.hidden&&!e.target.closest('.wallet-wrap')&&!e.target.closest('#sidebarWallet'))walletMenu.hidden=true;
       const routeBtn=e.target.closest('[data-route-tool]');if(routeBtn){e.preventDefault();location.hash=`#tool/${routeBtn.dataset.routeTool}`}
       const filter=e.target.closest('[data-filter]');if(filter){state.activeFilter=filter.dataset.filter;document.querySelectorAll('[data-filter]').forEach(n=>n.classList.toggle('active',n===filter));renderToolGrid();window.NockraI18n?.apply($('toolGrid'))}
       const copy=e.target.closest('[data-copy-ca]');if(copy){e.preventDefault();copyConfiguredAddress(copy)}
     });
-    $('toolSearch').addEventListener('input',()=>{renderToolGrid();window.NockraI18n?.apply($('toolGrid'))});
-    $('workspaceBack').addEventListener('click',()=>{location.hash='#tools'});$('homeCopyCa')?.addEventListener('click',e=>copyConfiguredAddress(e.currentTarget));document.addEventListener('submit',handleSubmit);
-    $('mobileMenuButton').addEventListener('click',()=>{$('mobilePanel').hidden=false;$('mobileMenuButton').setAttribute('aria-expanded','true')});$('closeMobile').addEventListener('click',()=>{$('mobilePanel').hidden=true;$('mobileMenuButton').setAttribute('aria-expanded','false')});$('mobilePanel').addEventListener('click',e=>{if(e.target.closest('a'))$('mobilePanel').hidden=true});
+    on('toolSearch','input',()=>{renderToolGrid();window.NockraI18n?.apply($('toolGrid'))});
+    on('workspaceBack','click',()=>{location.hash='#tools'});
+    on('homeCopyCa','click',e=>copyConfiguredAddress(e.currentTarget));
+    document.addEventListener('submit',handleSubmit);
+    on('mobileMenuButton','click',()=>{const panel=$('mobilePanel'),button=$('mobileMenuButton');if(panel)panel.hidden=false;if(button)button.setAttribute('aria-expanded','true')});
+    on('closeMobile','click',()=>{const panel=$('mobilePanel'),button=$('mobileMenuButton');if(panel)panel.hidden=true;if(button)button.setAttribute('aria-expanded','false')});
+    on('mobilePanel','click',e=>{if(e.target.closest('a')){const panel=$('mobilePanel');if(panel)panel.hidden=true}});
     window.addEventListener('hashchange',route);window.addEventListener('popstate',route);
     if(window.ethereum){
       window.ethereum.on?.('accountsChanged',async accounts=>{if(storageGet('nockra:wallet-disconnected')==='1'){state.account=null;state.signer=null;state.browserProvider=null;updateWalletUI();return}state.account=accounts?.[0]?(normalizeAddress(accounts[0])||accounts[0]):null;state.signer=null;state.browserProvider=null;if(state.account)void attachSigner().catch(()=>{});updateWalletUI();if(state.publicProvider)await refreshLive();const m=(location.hash||'').match(/^#tool\/([^?]+)/);if(m)renderTool(m[1])});
@@ -784,6 +815,8 @@
     try{route()}catch{}
     try{window.NockraI18n?.apply(document)}catch{}
     document.documentElement.dataset.appReady='true';
+    // Network/config work is always background work. It can never block the interface.
+    void refreshConfig();
     void restoreWalletSession().then(()=>{try{updateWalletUI();route()}catch{}}).catch(()=>{});
     void initPublic();
   }

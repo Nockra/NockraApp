@@ -56,12 +56,18 @@ must(!arrowChars.test(publicSource+css),'arrow glyph remains in public source');
 for(const ch of publicSource){must(ch.codePointAt(0)<0x1F000,`emoji-range character remains: U+${ch.codePointAt(0).toString(16)}`)}
 must(!app.includes('M6 18 18 6M11 6h7v7') && !app.includes('M4 12h13M13 8l4 4-4 4'),'arrow-shaped tool icons remain');
 
-must(html.includes('<script src="/app.js?v=20260915c" defer></script>'),'app must load directly without a dynamic bootstrap gate');
-must(html.includes('<script src="/token-artifact.js?v=20260915c" defer></script>'),'token artifact must load directly');
+must(html.includes('<script src="./app.js?v=20260915e" defer></script>'),'app must load directly with a relative project-root path');
+must(html.includes('<script src="./token-artifact.js?v=20260915e" defer></script>'),'token artifact must load directly with a relative project-root path');
 must(!html.includes('bootstrap.js'),'legacy dynamic bootstrap must not gate the interface');
 must(app.includes('storageGet') && app.includes('storageSet') && app.includes('storageRemove'),'storage-denied environments must not stop UI boot');
 must(app.includes("document.documentElement.dataset.appReady='true'"),'UI readiness marker missing');
-must(app.includes('void initPublic()'),'live RPC initialization must not block UI boot');
+
+must(!app.includes('const C = await loadConfig()'),'configuration fetch must never block UI startup');
+must(app.includes('const APP_BASE_URL') && app.includes("new URL('config.json',APP_BASE_URL)"),'subdirectory-safe config resolution missing');
+must(app.includes('function fixInternalUrls') && app.includes('APP_BASE_PATH'),'subdirectory-safe routing/link normalization missing');
+must(read('docs/index.html').includes('src="../app.js?v=20260915e"'),'nested route must load app.js from project root');
+must(read('nockra/index.html').includes('href="../styles.css?v=20260915e"'),'nested ticker route must load project styles');
+must(app.includes('void initPublic()') && app.includes('void refreshConfig()'),'live RPC/config initialization must not block UI boot');
 must(app.includes('Account connection must never wait on a third-party library CDN'),'wallet connect must not block on ethers loading');
 must(css.includes('.tools-menu[hidden]') && css.includes('.mobile-panel[hidden]') && css.includes('display:none!important'),'hidden overlays must not intercept clicks');
 must(!css.includes('html:not([data-config-ready="true"]) body{visibility:hidden}'),'whole-page visibility lock must be removed');
